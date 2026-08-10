@@ -30,3 +30,6 @@ Thumbs.db
 ## User secrets (asla repo'ya girmemeli)
 appsettings.*.local.json
 secrets.json
+
+## Bu sandbox oturumunda git lock temizligi icin gecici klasor - silinebilir
+_to_delete/
