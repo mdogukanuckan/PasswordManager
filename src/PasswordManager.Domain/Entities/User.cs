@@ -12,4 +12,5 @@ public class User : BaseEntity
     public int KdfIterations { get; set; } = 3;
 
     public ICollection<VaultItem> VaultItems { get; set; } = new List<VaultItem>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }
