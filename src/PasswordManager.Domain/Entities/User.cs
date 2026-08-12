@@ -6,6 +6,7 @@ public class User : BaseEntity
     public string AuthHash { get; set; } = string.Empty;
     public string AuthSalt { get; set; } = string.Empty;
     public string WrappedVaultKey { get; set; } = string.Empty;
+    public string WrappedVaultKeyNonce { get; set; } = string.Empty;
 
     public string EncryptionSalt { get; set; } = string.Empty;
 

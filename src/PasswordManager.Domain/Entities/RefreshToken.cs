@@ -7,5 +7,5 @@ public class RefreshToken : BaseEntity
 
     public string TokenHash { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
-    public DateTime? RevokeAt {get;set;}
+    public DateTime? RevokedAt { get; set; }
 }
