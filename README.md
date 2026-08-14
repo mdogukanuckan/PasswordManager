@@ -28,38 +28,39 @@ Bağımlılıklar hep içe doğru akar (Dependency Inversion) — Infrastructure
 Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da şifrelenmemiş vault verisini görmez.
 
 - Master password, client'ta Argon2id ile iki farklı anahtar türetir: **AuthKey** (sunucuya gönderilir, kimlik doğrulama için) ve **EncryptionKey** (sunucuya asla gitmez, sadece client'ta kalır).
-- **Envelope encryption:** Vault içeriği, rastgele üretilen bir AES-256 **Vault Key** ile şifrelenir. Vault Key'in kendisi de EncryptionKey ile "wrap" edilip `WrappedVaultKey` olarak saklanır. Master password değişince sadece bu wrap'lenmiş anahtar yeniden şifrelenir, vault içeriğine dokunulmaz.
+- **Envelope encryption:** Vault içeriği, rastgele üretilen bir AES-256 **Vault Key** ile şifrelenir. Vault Key'in kendisi de EncryptionKey ile "wrap" edilip `WrappedVaultKey` (+ `WrappedVaultKeyNonce`) olarak saklanır. Master password değişince sadece bu wrap'lenmiş anahtar yeniden şifrelenir, vault içeriğine dokunulmaz.
 - Sunucuya gelen `AuthKey` bile çıplak saklanmaz — bir kez daha hashlenip `AuthHash` olarak veritabanına yazılır.
 
 ## Yol Haritası
 
 ### Domain Katmanı
 - [x] `BaseEntity` (Id, CreatedAt, ModifiedAt)
-- [x] `User` (Email, AuthHash, AuthSalt, EncryptionSalt, WrappedVaultKey, KdfIterations)
+- [x] `User` (Email, AuthHash, AuthSalt, EncryptionSalt, WrappedVaultKey, WrappedVaultKeyNonce, KdfIterations)
 - [x] `VaultItem` (EncryptedData, Nonce)
 - [x] `RefreshToken` (TokenHash, ExpiresAt, RevokedAt)
 
 ### Application Katmanı
 - [x] `IUserRepository`
 - [x] `IVaultItemRepository`
+- [x] `IRefreshTokenRepository`
 - [x] Auth DTO'ları: `RegisterRequest`, `LoginRequest`, `SaltResponse`, `AuthResponse`
-- [ ] `IRefreshTokenRepository`
-- [ ] `IAuthService` (register/login/refresh/salt akışlarının orkestrasyonu)
-- [ ] Vault item DTO'ları ve `IVaultItemService`
+- [x] `IAuthService` (register/login/refresh/salt akışlarının orkestrasyonu)
+- [x] Vault item DTO'ları ve `IVaultItemService`
 
 ### Infrastructure Katmanı
-- [ ] `AppDbContext` (EF Core) + entity konfigürasyonları (Fluent API)
-- [ ] Repository implementasyonları (`UserRepository`, `VaultItemRepository`, `RefreshTokenRepository`)
+- [x] `AppDbContext` (EF Core) + entity konfigürasyonları (Fluent API)
+- [x] Repository implementasyonları (`UserRepository`, `VaultItemRepository`, `RefreshTokenRepository`)
 - [ ] `AuthService` implementasyonu (Argon2/bcrypt server-side hash, JWT üretimi)
-- [ ] PostgreSQL bağlantısı + ilk migration
-- [ ] Dependency Injection kayıtları
+- [x] PostgreSQL kurulumu + bağlantı (`dotnet user-secrets` ile connection string)
+- [ ] İlk migration (`dotnet ef migrations add` + `dotnet ef database update`)
+- [ ] Dependency Injection kayıtları (`Program.cs` — `AddDbContext`, repository/servis kayıtları)
 
 ### API Katmanı
 - [ ] `AuthController` (`POST /auth/register`, `POST /auth/login`, `GET /auth/salt`, `POST /auth/refresh`)
 - [ ] `VaultController` (CRUD)
 - [ ] JWT Bearer authentication middleware
 - [ ] Global exception handling middleware
-- [ ] `dotnet user-secrets` ile sır yönetimi (connection string, JWT signing key)
+- [ ] `dotnet user-secrets` ile JWT signing key yönetimi (connection string zaten user-secrets'ta)
 
 ### Client — .NET MAUI (henüz başlanmadı)
 - [ ] Proje iskeleti
@@ -69,7 +70,14 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [ ] Vault listeleme / ekleme / düzenleme ekranları
 - [ ] AES-256-GCM ile vault item şifreleme/çözme
 
+## Açık mimari kararlar
+
+- Sunucu tarafı `AuthHash` için Argon2id mi bcrypt mi kullanılacağı henüz kesinleşmedi.
+- `KdfIterations` şu an placeholder değerde (3) — gerçek/nihai değer henüz kararlaştırılmadı.
+- Email enumeration'a karşı `GetSaltAsync` için deterministik sahte salt üretimi henüz tasarlanmadı.
+
 ## Notlar
 
 - Bu proje bir C# öğrenme sürecinin parçası olarak, adım adım ve her katmanın "neden" o şekilde tasarlandığı açıklanarak geliştiriliyor.
 - `Microsoft.OpenApi` paketinde bilinen bir güvenlik açığı (NU1903) uyarısı mevcut, henüz güncellenmedi.
+</content>
