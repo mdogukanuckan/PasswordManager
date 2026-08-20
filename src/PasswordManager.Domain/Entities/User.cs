@@ -10,7 +10,9 @@ public class User : BaseEntity
 
     public string EncryptionSalt { get; set; } = string.Empty;
 
-    public int KdfIterations { get; set; } = 3;
+    public int KdfIterations { get; set; } = 2;
+    public int KdfMemorySize { get; set; } = 19456;
+    public int KdfParallelism { get; set; } = 1;
 
     public ICollection<VaultItem> VaultItems { get; set; } = new List<VaultItem>();
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
