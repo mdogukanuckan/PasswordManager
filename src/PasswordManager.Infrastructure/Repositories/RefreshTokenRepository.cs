@@ -19,10 +19,12 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<RefreshToken?> GetByTokenHashAsync(string tokenHash)
-    {
-        return await  _context.RefreshTokens.FirstOrDefaultAsync(r => r.TokenHash == tokenHash);
-    }
+   public async Task<RefreshToken?> GetByTokenHashAsync(string tokenHash)
+{
+    return await _context.RefreshTokens
+        .Include(r => r.User)
+        .FirstOrDefaultAsync(r => r.TokenHash == tokenHash);
+}
 
     public async Task RevokeAsync(RefreshToken refreshToken)
     {

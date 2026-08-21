@@ -66,9 +66,19 @@ public class AuthService : IAuthService
 
     }
 
-    public Task<AuthResponse> RefreshAsync(string refreshToken)
+    public async Task<AuthResponse> RefreshAsync(string refreshToken)
     {
-        throw new NotImplementedException();
+        string tokenHash = _tokenGenerator.HashRefreshToken(refreshToken);
+        var existingToken = await _refreshTokenRepository.GetByTokenHashAsync(tokenHash);
+
+        if (existingToken is null || existingToken.RevokedAt is not null || existingToken.ExpiresAt < DateTime.UtcNow)
+        {
+            throw new InvalidCredentialsException();
+        }
+
+        await _refreshTokenRepository.RevokeAsync(existingToken);
+
+        return await IssueAuthResponseAsync(existingToken.User);
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
