@@ -6,4 +6,5 @@ public record RegisterRequest
     string AuthKey,
     string AuthSalt,
     string EncryptionSalt,
-    string WrappedVaultKey);
+    string WrappedVaultKey,
+    string WrappedVaultKeyNonce);

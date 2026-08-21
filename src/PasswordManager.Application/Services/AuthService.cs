@@ -62,6 +62,50 @@ public class AuthService : IAuthService
         {
             throw new InvalidCredentialsException();
         }
+        return await IssueAuthResponseAsync(user);
+
+    }
+
+    public Task<AuthResponse> RefreshAsync(string refreshToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
+    {
+        string normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var existingUser = await _userRepository.GetByEmailAsync(normalizedEmail);
+
+        if (existingUser is not null)
+        {
+            throw new EmailAlreadyExistsException();
+        }
+
+        var user = new User
+        {
+            Email = normalizedEmail,
+            AuthHash = _passwordHasher.Hash(request.AuthKey),
+            AuthSalt = request.AuthSalt,
+            EncryptionSalt = request.EncryptionSalt,
+            WrappedVaultKey = request.WrappedVaultKey,
+            WrappedVaultKeyNonce = request.WrappedVaultKeyNonce
+        };
+
+        await _userRepository.AddAsync(user);
+
+        return await IssueAuthResponseAsync(user);
+    }
+
+    private static string ComputeFakeSalt(byte[] pepper, string normalizedEmail, string context)
+    {
+        using var hmac = new HMACSHA256(pepper);
+        byte[] input = Encoding.UTF8.GetBytes($"{context}:{normalizedEmail}");
+        byte[] hash = hmac.ComputeHash(input);
+        return Convert.ToBase64String(hash[..16]);
+    }
+
+    private async Task<AuthResponse> IssueAuthResponseAsync(User user)
+    {
         string accessToken = _tokenGenerator.GenerateAccessToken(user);
         string refreshToken = _tokenGenerator.GenerateRefreshToken();
         string refreshTokenHash = _tokenGenerator.HashRefreshToken(refreshToken);
@@ -78,23 +122,5 @@ public class AuthService : IAuthService
             user.WrappedVaultKey,
             user.WrappedVaultKeyNonce
         );
-    }
-
-    public Task<AuthResponse> RefreshAsync(string refreshToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<AuthResponse> RegisterAsync(RegisterRequest request)
-    {
-        throw new NotImplementedException();
-    }
-
-    private static string ComputeFakeSalt(byte[] pepper, string normalizedEmail, string context)
-    {
-        using var hmac = new HMACSHA256(pepper);
-        byte[] input = Encoding.UTF8.GetBytes($"{context}:{normalizedEmail}");
-        byte[] hash = hmac.ComputeHash(input);
-        return Convert.ToBase64String(hash[..16]);
     }
 }
