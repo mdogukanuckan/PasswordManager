@@ -72,7 +72,7 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 
 ### API Katmanı
 - [x] `AuthController` (`POST /auth/register`, `POST /auth/login`, `GET /auth/salt`, `POST /auth/refresh`)
-- [ ] `VaultController` (CRUD)
+- [x] `VaultItemController` (`GET /api/VaultItem`, `GET /api/VaultItem/{id}`, `POST /api/VaultItem`, `PUT /api/VaultItem/{id}`, `DELETE /api/VaultItem/{id}`)
 - [x] JWT Bearer authentication middleware
 - [x] Global exception handling middleware (`InvalidCredentialsException`→401, `EmailAlreadyExistsException`→409)
 - [x] `dotnet user-secrets` ile JWT signing key yönetimi (connection string zaten user-secrets'ta)
@@ -82,6 +82,7 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] `AuthService` unit testleri — 12/12 yeşil (salt/login/register/refresh, enumeration koruması ve token rotasyonu dahil)
 - [x] Auth API katmanının uçtan uca (E2E) manuel doğrulaması — `dotnet run` + PowerShell `Invoke-RestMethod` ile register → login → refresh rotasyonu → eski token'ın reddi (401) zinciri gerçek bir PostgreSQL veritabanına karşı test edildi
 - [x] `VaultItemService` unit testleri — 8/8 yeşil (CRUD akışları + var-olmayan/başkasına-ait kaynak senaryoları dahil) — **toplam 20/20 test yeşil**
+- [x] `VaultItemController` API katmanının uçtan uca (E2E) manuel doğrulaması — `dotnet run` + PowerShell `Invoke-WebRequest` ile tokensız istek (401) → login → Create (201 + `Location`) → GetById → GetAll → Update (`ModifiedAt` kontrolü) → Delete (204) → silinen kaydın GetById'si (404) zinciri, ayrıca ikinci bir kullanıcıyla IDOR/enumeration testi (başkasının kaydına erişim denemesi de aynı 404'ü döndü) gerçek bir PostgreSQL veritabanına karşı test edildi
 - [ ] `Argon2PasswordHasher` / `JwtTokenGenerator` için Infrastructure katmanı testleri (kapsam dışı bırakıldı, ileride ayrı bir konu)
 
 ### Client — .NET MAUI (henüz başlanmadı)
