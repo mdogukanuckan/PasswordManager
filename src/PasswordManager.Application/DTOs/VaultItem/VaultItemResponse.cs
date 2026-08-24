@@ -5,5 +5,5 @@ public record VaultItemResponse(
     string EncryptedData,
     string Nonce,
     DateTime CreatedAt,
-    DateTime ModifiedAt
+    DateTime? ModifiedAt
 );

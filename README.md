@@ -42,6 +42,7 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - **Register enumeration:** Login'in aksine, kayıt sırasında email zaten kayıtlıysa bunu açıkça bildiriyoruz (`EmailAlreadyExistsException`, 409) — Bitwarden gibi ürünlerdeki yaygın pratikle tutarlı bir tercih.
 - **Application katmanı, `Microsoft.Extensions.Configuration`'dan bağımsız:** Config değerleri (`Auth:EmailHmacPepper` gibi) `IOptions<T>` deseniyle enjekte ediliyor — Dependency Inversion, ve test'te mock'lamayı kolaylaştırıyor.
 - **Global exception handling:** Bilinmeyen (500) hatalarda exception'ın `.Message`'ı client'a asla dönmez — sabit, genel bir mesaj döner ve gerçek detay sadece sunucu tarafında `ILogger` ile loglanır (iç implementasyon detaylarının sızmasını önlemek için). Bilinen/mapped exception'larda (`InvalidCredentialsException`→401, `EmailAlreadyExistsException`→409, `NotFoundException`→404) ise kasıtlı yazılmış, güvenli bir `detail` mesajı dönülür — bu bir sızıntı değil, bilinçli bir UX tercihi.
+- **Vault item erişiminde IDOR koruması:** `VaultItemService`, bir kaydı her zaman hem `id` hem de o an istek yapan kullanıcının `userId`'siyle birlikte sorgular (`GetByIdAsync(id, userId)`). Kayıt hiç yoksa da, kayıt var ama başka bir kullanıcıya aitse de aynı, ayrım yapmayan `NotFoundException` (404) fırlatılır — email enumeration korumasındaki ilkenin aynısı, bu kez kaynak ID'si için uygulanmış hali.
 
 ## Yol Haritası
 
@@ -59,7 +60,7 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] `IAuthService` (register/login/refresh/salt akışlarının orkestrasyonu)
 - [x] Vault item DTO'ları ve `IVaultItemService`
 - [x] `AuthService` implementasyonu — 4 metot da tamamlandı ve **tam test kapsamında (12/12 unit test, xUnit+Moq+FluentAssertions)**
-- [ ] `VaultItemService` implementasyonu — henüz başlanmadı
+- [x] `VaultItemService` implementasyonu — 5 metot da tamamlandı (CRUD + kullanıcı bazlı yetkilendirme) ve **tam test kapsamında (8/8 unit test)**
 
 ### Infrastructure Katmanı
 - [x] `AppDbContext` (EF Core) + entity konfigürasyonları (Fluent API)
@@ -80,7 +81,7 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] `tests/PasswordManager.Application.Tests` projesi (xUnit + Moq + FluentAssertions, Central Package Management ile)
 - [x] `AuthService` unit testleri — 12/12 yeşil (salt/login/register/refresh, enumeration koruması ve token rotasyonu dahil)
 - [x] Auth API katmanının uçtan uca (E2E) manuel doğrulaması — `dotnet run` + PowerShell `Invoke-RestMethod` ile register → login → refresh rotasyonu → eski token'ın reddi (401) zinciri gerçek bir PostgreSQL veritabanına karşı test edildi
-- [ ] `VaultItemService` unit testleri (servis yazılınca)
+- [x] `VaultItemService` unit testleri — 8/8 yeşil (CRUD akışları + var-olmayan/başkasına-ait kaynak senaryoları dahil) — **toplam 20/20 test yeşil**
 - [ ] `Argon2PasswordHasher` / `JwtTokenGenerator` için Infrastructure katmanı testleri (kapsam dışı bırakıldı, ileride ayrı bir konu)
 
 ### Client — .NET MAUI (henüz başlanmadı)
