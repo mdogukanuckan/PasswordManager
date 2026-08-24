@@ -1,4 +1,4 @@
-using PasswordManager.Application.DTOs.VaultItem;
+using PasswordManager.Contracts.DTOs.VaultItem;
 
 namespace PasswordManager.Application.Interfaces.Services;
 

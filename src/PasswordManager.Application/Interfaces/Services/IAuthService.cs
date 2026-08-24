@@ -1,4 +1,4 @@
-using PasswordManager.Application.DTOs.Auth;
+using PasswordManager.Contracts.DTOs.Auth;
 
 namespace PasswordManager.Application.Interfaces.Services;
 

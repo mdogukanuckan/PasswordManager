@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PasswordManager.Application.DTOs.VaultItem;
 using PasswordManager.Application.Interfaces.Services;
+using PasswordManager.Contracts.DTOs.VaultItem;
 
 namespace PasswordManager.API.Controllers;
 

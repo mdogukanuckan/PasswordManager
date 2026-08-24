@@ -2,11 +2,11 @@ using PasswordManager.Application.Exceptions;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
-using PasswordManager.Application.DTOs.Auth;
 using PasswordManager.Application.Interfaces.Repositories;
 using PasswordManager.Application.Interfaces.Services;
 using PasswordManager.Application.Options;
 using PasswordManager.Domain.Entities;
+using PasswordManager.Contracts.DTOs.Auth;
 
 
 namespace PasswordManager.Application.Services;

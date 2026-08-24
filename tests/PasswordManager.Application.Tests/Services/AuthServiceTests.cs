@@ -6,8 +6,8 @@ using PasswordManager.Application.Services;
 using static Microsoft.Extensions.Options.Options;
 using FluentAssertions;
 using PasswordManager.Domain.Entities;
-using PasswordManager.Application.DTOs.Auth;
 using PasswordManager.Application.Exceptions;
+using PasswordManager.Contracts.DTOs.Auth;
 namespace PasswordManager.Application.Tests.Services;
 
 public class AuthServiceTests

@@ -1,3 +1,3 @@
-namespace PasswordManager.Application.DTOs.Auth;
+namespace PasswordManager.Contracts.DTOs.Auth;
 
 public record RefreshRequest(string RefreshToken);

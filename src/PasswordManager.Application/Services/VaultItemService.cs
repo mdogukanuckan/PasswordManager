@@ -1,7 +1,7 @@
-using PasswordManager.Application.DTOs.VaultItem;
 using PasswordManager.Application.Exceptions;
 using PasswordManager.Application.Interfaces.Repositories;
 using PasswordManager.Application.Interfaces.Services;
+using PasswordManager.Contracts.DTOs.VaultItem;
 using PasswordManager.Domain.Entities;
 
 namespace PasswordManager.Application.Services;

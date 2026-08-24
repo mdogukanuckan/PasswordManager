@@ -1,4 +1,4 @@
-namespace PasswordManager.Application.DTOs.VaultItem;
+namespace PasswordManager.Contracts.DTOs.VaultItem;
 
 public record CreateVaultItemRequest(
     string EncryptedData,

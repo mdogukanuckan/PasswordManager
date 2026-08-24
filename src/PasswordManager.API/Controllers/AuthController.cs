@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using PasswordManager.Application.DTOs.Auth;
 using PasswordManager.Application.Interfaces.Services;
+using PasswordManager.Contracts.DTOs.Auth;
 
 namespace PasswordManager.API.Controllers;
 
