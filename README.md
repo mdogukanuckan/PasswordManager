@@ -41,6 +41,7 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - **Refresh token rotasyonu:** Her `RefreshAsync` çağrısında eski token iptal edilir (`RevokedAt` set edilir), yepyeni bir access+refresh çifti üretilir (OAuth2 RFC pratiği).
 - **Register enumeration:** Login'in aksine, kayıt sırasında email zaten kayıtlıysa bunu açıkça bildiriyoruz (`EmailAlreadyExistsException`, 409) — Bitwarden gibi ürünlerdeki yaygın pratikle tutarlı bir tercih.
 - **Application katmanı, `Microsoft.Extensions.Configuration`'dan bağımsız:** Config değerleri (`Auth:EmailHmacPepper` gibi) `IOptions<T>` deseniyle enjekte ediliyor — Dependency Inversion, ve test'te mock'lamayı kolaylaştırıyor.
+- **Global exception handling:** Bilinmeyen (500) hatalarda exception'ın `.Message`'ı client'a asla dönmez — sabit, genel bir mesaj döner ve gerçek detay sadece sunucu tarafında `ILogger` ile loglanır (iç implementasyon detaylarının sızmasını önlemek için). Bilinen/mapped exception'larda (`InvalidCredentialsException`→401, `EmailAlreadyExistsException`→409, `NotFoundException`→404) ise kasıtlı yazılmış, güvenli bir `detail` mesajı dönülür — bu bir sızıntı değil, bilinçli bir UX tercihi.
 
 ## Yol Haritası
 
@@ -65,19 +66,20 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] Repository implementasyonları (`UserRepository`, `VaultItemRepository`, `RefreshTokenRepository`)
 - [x] `Argon2PasswordHasher`, `JwtTokenGenerator`
 - [x] PostgreSQL kurulumu + bağlantı (`dotnet user-secrets` ile connection string)
-- [ ] İlk migration (`dotnet ef migrations add` + `dotnet ef database update`)
-- [ ] Dependency Injection kayıtları (`Program.cs` — `AddDbContext`, repository/servis kayıtları; şu an sadece `AuthOptions` binding'i var)
+- [x] İlk migration (`dotnet ef migrations add` + `dotnet ef database update`)
+- [x] Dependency Injection kayıtları (`Program.cs` — `AddDbContext`, repository/servis kayıtları, `AuthOptions` binding'i)
 
 ### API Katmanı
-- [ ] `AuthController` (`POST /auth/register`, `POST /auth/login`, `GET /auth/salt`, `POST /auth/refresh`)
+- [x] `AuthController` (`POST /auth/register`, `POST /auth/login`, `GET /auth/salt`, `POST /auth/refresh`)
 - [ ] `VaultController` (CRUD)
-- [ ] JWT Bearer authentication middleware
-- [ ] Global exception handling middleware (`InvalidCredentialsException`→401, `EmailAlreadyExistsException`→409)
-- [ ] `dotnet user-secrets` ile JWT signing key yönetimi (connection string zaten user-secrets'ta)
+- [x] JWT Bearer authentication middleware
+- [x] Global exception handling middleware (`InvalidCredentialsException`→401, `EmailAlreadyExistsException`→409)
+- [x] `dotnet user-secrets` ile JWT signing key yönetimi (connection string zaten user-secrets'ta)
 
 ### Test
 - [x] `tests/PasswordManager.Application.Tests` projesi (xUnit + Moq + FluentAssertions, Central Package Management ile)
 - [x] `AuthService` unit testleri — 12/12 yeşil (salt/login/register/refresh, enumeration koruması ve token rotasyonu dahil)
+- [x] Auth API katmanının uçtan uca (E2E) manuel doğrulaması — `dotnet run` + PowerShell `Invoke-RestMethod` ile register → login → refresh rotasyonu → eski token'ın reddi (401) zinciri gerçek bir PostgreSQL veritabanına karşı test edildi
 - [ ] `VaultItemService` unit testleri (servis yazılınca)
 - [ ] `Argon2PasswordHasher` / `JwtTokenGenerator` için Infrastructure katmanı testleri (kapsam dışı bırakıldı, ileride ayrı bir konu)
 
