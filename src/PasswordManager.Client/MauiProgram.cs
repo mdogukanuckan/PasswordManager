@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using PasswordManager.Client.Services;
 
 namespace PasswordManager.Client;
 
@@ -18,6 +19,12 @@ public static class MauiProgram
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
+builder.Services.AddHttpClient<IAuthApiService, AuthApiService>(client =>
+{
+    client.BaseAddress = DeviceInfo.Current.Platform == DevicePlatform.Android
+        ? new Uri("http://172.17.10.63:5273/")
+        : new Uri("http://localhost:5273/");
+});
 
 		return builder.Build();
 	}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+	<!-- Bu ayar SADECE debug build'lerde (android:debuggable="true" iken) devreye girer.
+	     Release build'i hiçbir şekilde etkilemez, cleartext (şifresiz HTTP) trafiği
+	     Play Store'a gidecek bir sürümde asla açık olmaz. -->
+	<debug-overrides>
+		<domain-config cleartextTrafficPermitted="true">
+			<domain includeSubdomains="false">172.17.10.63</domain>
+		</domain-config>
+	</debug-overrides>
+</network-security-config>
