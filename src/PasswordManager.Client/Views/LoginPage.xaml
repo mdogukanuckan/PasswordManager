@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PasswordManager.Client.Views.LoginPage">
+
+    <VerticalStackLayout Padding="30"
+                         Spacing="15">
+
+        <Entry
+            Placeholder="E-posta"
+            Text="{Binding Email}"/>
+
+        <Entry
+            Placeholder="Şifre"
+            Text="{Binding Password}"
+            IsPassword="True"/>
+
+        <Button
+            Text="Giriş Yap"
+            Command="{Binding LoginCommand}"/>
+
+        <Label
+            Text="{Binding ErrorMessage}"/>
+
+    </VerticalStackLayout>
+
+</ContentPage>

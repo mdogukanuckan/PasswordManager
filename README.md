@@ -6,7 +6,7 @@ Zero-knowledge mimarili, kişisel bir şifre yöneticisi projesi. Asıl amaç uy
 
 - **Backend:** C# / .NET 10 Web API (Controller tabanlı)
 - **Veritabanı:** PostgreSQL + Entity Framework Core
-- **Client (planlanan):** .NET MAUI (masaüstü + mobil, tek kod tabanı)
+- **Client (geliştiriliyor):** .NET MAUI — Windows masaüstü + Android (iOS/MacCatalyst hedeflenmiyor), `CommunityToolkit.Mvvm` ile MVVM
 - **Kimlik doğrulama:** JWT (elle yazılmış `IAuthService`, ASP.NET Core Identity kullanılmıyor — öğrenme amaçlı)
 - **Test:** xUnit + Moq + FluentAssertions (`tests/PasswordManager.Application.Tests`)
 
@@ -20,9 +20,13 @@ PasswordManager.Application     <- sadece Domain'e bağımlı (interface'ler, DT
 PasswordManager.Infrastructure  <- Application'ı implemente eder (EF Core, JWT, Argon2)
         ^
 PasswordManager.API             <- HTTP katmanı (Controller'lar, middleware)
+
+PasswordManager.Contracts       <- hiçbir şeye bağımlı değil (paylaşılan DTO'lar)
+        ^                    ^
+PasswordManager.Application   PasswordManager.Client
 ```
 
-Bağımlılıklar hep içe doğru akar (Dependency Inversion) — Infrastructure, Application'daki soyut arayüzlere bağımlıdır, tam tersi değil.
+Bağımlılıklar hep içe doğru akar (Dependency Inversion) — Infrastructure, Application'daki soyut arayüzlere bağımlıdır, tam tersi değil. `Contracts`, MAUI client'ın backend'in `Application` katmanına (ve onun iş mantığı arayüzlerine) doğrudan referans vermemesi için ayrı çıkarıldı — hem `Application` hem `Client`, DTO'lar için sadece `Contracts`'a bağımlı, derleme zamanında garantili tek doğruluk kaynağı.
 
 ## Zero-Knowledge Mimarisi
 
@@ -85,11 +89,15 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] `VaultItemController` API katmanının uçtan uca (E2E) manuel doğrulaması — `dotnet run` + PowerShell `Invoke-WebRequest` ile tokensız istek (401) → login → Create (201 + `Location`) → GetById → GetAll → Update (`ModifiedAt` kontrolü) → Delete (204) → silinen kaydın GetById'si (404) zinciri, ayrıca ikinci bir kullanıcıyla IDOR/enumeration testi (başkasının kaydına erişim denemesi de aynı 404'ü döndü) gerçek bir PostgreSQL veritabanına karşı test edildi
 - [ ] `Argon2PasswordHasher` / `JwtTokenGenerator` için Infrastructure katmanı testleri (kapsam dışı bırakıldı, ileride ayrı bir konu)
 
-### Client — .NET MAUI (henüz başlanmadı)
-- [ ] Proje iskeleti
-- [ ] Client-side Argon2id key derivation
-- [ ] Register / Login ekranları
+### Client — .NET MAUI (geliştiriliyor)
+- [x] Proje iskeleti (Windows + Android hedefli, `PasswordManager.Contracts` ile paylaşılan DTO'lar)
+- [x] MVVM altyapısı (`CommunityToolkit.Mvvm`, `Views/`/`ViewModels/`/`Services/` klasör yapısı)
+- [x] Auth API client katmanı (`IAuthApiService`/`AuthApiService`, exception tabanlı hata yönetimi)
+- [x] Fiziksel Android cihaz networking'i (Kestrel `0.0.0.0` binding, Windows Firewall, Android cleartext config) — telefon üzerinden doğrulandı
+- [x] `LoginViewModel` + `LoginPage` — uçtan uca test edildi (gerçek backend + PostgreSQL'e karşı, Windows'ta)
+- [ ] Register ekranı
 - [ ] `SecureStorage` ile token saklama
+- [ ] Client-side Argon2id key derivation (şu an `LoginViewModel`, gerçek `AuthKey` yerine geçici olarak ham şifreyi gönderiyor — bkz. Notlar)
 - [ ] Vault listeleme / ekleme / düzenleme ekranları
 - [ ] AES-256-GCM ile vault item şifreleme/çözme
 
@@ -98,3 +106,4 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - Bu proje bir C# öğrenme sürecinin parçası olarak, adım adım ve her katmanın "neden" o şekilde tasarlandığı açıklanarak geliştiriliyor.
 - `Microsoft.OpenApi` paketinde bilinen bir güvenlik açığı (NU1903) uyarısı mevcut, henüz güncellenmedi.
 - Test projesi `FluentAssertions` v8+ kullanıyor — bireysel/ticari-olmayan kullanım için ücretsiz (Xceed Community License), ticari kullanım ayrı bir lisans gerektiriyor.
+- **Bilinçli, geçici bir Zero-Knowledge kısayolu:** Client-side Argon2id key derivation henüz yazılmadığı için, `LoginViewModel` şu an backend'e `AuthKey` yerine geçici olarak ham şifreyi gönderiyor (kodda `TODO` yorumuyla işaretli). Bu, projenin Zero-Knowledge iddiasını şu an için ihlal ediyor — client-side Argon2id implementasyonu tamamlanana kadar geçerli, bilinçli bir ara adım (sadece UI/wiring/E2E akışını doğrulamak için).
