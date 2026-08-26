@@ -5,11 +5,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:PasswordManager.Client"
     xmlns:views="clr-namespace:PasswordManager.Client.Views"
+    FlyoutBehavior="Disabled"
     Title="PasswordManager.Client">
 
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate views:LoginPage}"
-        Route="MainPage" />
+        Route="LoginPage"/>
+    <ShellContent
+        Title="Homepage"
+        ContentTemplate="{DataTemplate views:HomePage}"
+        Route="HomePage"/>
 
 </Shell>

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿
+using PasswordManager.Client.Views;
 
 namespace PasswordManager.Client;
 
@@ -6,6 +7,7 @@ public partial class App : Application
 {
 	public App()
 	{
+
 		InitializeComponent();
 	}
 

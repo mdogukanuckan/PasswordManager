@@ -19,10 +19,12 @@ public partial class LoginViewModel : ObservableObject
     public partial bool IsBusy { get; set; }
 
     private readonly IAuthApiService _authApiService;
+    private readonly ITokenStorageService _tokenStorageService;
 
-    public LoginViewModel(IAuthApiService authApiService)
+    public LoginViewModel(IAuthApiService authApiService, ITokenStorageService tokenStorageService)
     {
         _authApiService = authApiService;
+        _tokenStorageService = tokenStorageService;
     }
 
     [RelayCommand]
@@ -36,7 +38,8 @@ public partial class LoginViewModel : ObservableObject
 
             // TODO: Argon2id key derivation ile AuthKey üretilecek, şimdilik geçici olarak Password gönderiliyor
             var response = await _authApiService.LoginAsync(new LoginRequest(Email, Password));
-            System.Diagnostics.Debug.WriteLine($"Login başarılı, token: {response.AccessToken}");
+            await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
+            await Shell.Current.GoToAsync("//HomePage");
         }
         catch (ApiException ex)
         {

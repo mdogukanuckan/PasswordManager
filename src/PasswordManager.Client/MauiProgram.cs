@@ -29,6 +29,8 @@ public static class MauiProgram
 		});
 		builder.Services.AddTransient<LoginViewModel>();
 		builder.Services.AddTransient<LoginPage>();
+		builder.Services.AddTransient<HomeViewModel>();
+		builder.Services.AddTransient<HomePage>();
 
 		builder.Services.AddSingleton<ITokenStorageService, TokenStorageService>();
 

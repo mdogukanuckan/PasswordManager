@@ -1,4 +1,5 @@
-﻿namespace PasswordManager.Client;
+﻿
+namespace PasswordManager.Client;
 
 public partial class AppShell : Shell
 {
