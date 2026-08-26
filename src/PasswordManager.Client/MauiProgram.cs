@@ -30,6 +30,8 @@ public static class MauiProgram
 		builder.Services.AddTransient<LoginViewModel>();
 		builder.Services.AddTransient<LoginPage>();
 
+		builder.Services.AddSingleton<ITokenStorageService, TokenStorageService>();
+
 		return builder.Build();
 	}
 }
