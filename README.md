@@ -94,16 +94,19 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] MVVM altyapısı (`CommunityToolkit.Mvvm`, `Views/`/`ViewModels/`/`Services/` klasör yapısı)
 - [x] Auth API client katmanı (`IAuthApiService`/`AuthApiService`, exception tabanlı hata yönetimi)
 - [x] Fiziksel Android cihaz networking'i (Kestrel `0.0.0.0` binding, Windows Firewall, Android cleartext config) — telefon üzerinden doğrulandı
+- [x] `SecureStorage` ile token saklama (`ITokenStorageService`, Singleton DI)
 - [x] `LoginViewModel` + `LoginPage` — uçtan uca test edildi (gerçek backend + PostgreSQL'e karşı, Windows'ta)
-- [ ] Register ekranı
-- [ ] `SecureStorage` ile token saklama
-- [ ] Client-side Argon2id key derivation (şu an `LoginViewModel`, gerçek `AuthKey` yerine geçici olarak ham şifreyi gönderiyor — bkz. Notlar)
+- [x] `HomePage` + login-sonrası Shell navigasyonu (`Shell.Current.GoToAsync("//HomePage")`, absolute route — `HomePage` `AppShell.xaml`'de `ShellContent` olarak tanımlı)
+- [x] Client-side Argon2id key derivation (`IKeyDerivationService`) — `LoginViewModel`'e kablolandı, artık gerçek `AuthKey`/`EncryptionKey` türetiliyor, ham şifre backend'e gitmiyor
+- [x] AES-256-GCM key wrapping çekirdeği (`IVaultCryptoService.WrapKey`/`UnwrapKey`) — `VaultKey`'i `EncryptionKey` ile sarmalamak için
+- [x] Register ekranı (`RegisterViewModel` + `RegisterPage`) — client salt'ları kendisi üretir, Argon2id ile `AuthKey`/`EncryptionKey` türetir, rastgele bir `VaultKey` üretip `WrapKey` ile sarmalar, başarılı kayıt sonrası otomatik login + `HomePage` navigasyonu — **uçtan uca test edildi (gerçek backend + PostgreSQL'e karşı)**
 - [ ] Vault listeleme / ekleme / düzenleme ekranları
-- [ ] AES-256-GCM ile vault item şifreleme/çözme
+- [ ] Vault item alanlarının (kullanıcı adı, şifre metni vb.) AES-256-GCM ile şifrelenmesi/çözülmesi (wrap/unwrap çekirdeği hazır, henüz vault item CRUD akışına bağlanmadı)
 
 ## Notlar
 
 - Bu proje bir C# öğrenme sürecinin parçası olarak, adım adım ve her katmanın "neden" o şekilde tasarlandığı açıklanarak geliştiriliyor.
 - `Microsoft.OpenApi` paketinde bilinen bir güvenlik açığı (NU1903) uyarısı mevcut, henüz güncellenmedi.
 - Test projesi `FluentAssertions` v8+ kullanıyor — bireysel/ticari-olmayan kullanım için ücretsiz (Xceed Community License), ticari kullanım ayrı bir lisans gerektiriyor.
-- **Bilinçli, geçici bir Zero-Knowledge kısayolu:** Client-side Argon2id key derivation henüz yazılmadığı için, `LoginViewModel` şu an backend'e `AuthKey` yerine geçici olarak ham şifreyi gönderiyor (kodda `TODO` yorumuyla işaretli). Bu, projenin Zero-Knowledge iddiasını şu an için ihlal ediyor — client-side Argon2id implementasyonu tamamlanana kadar geçerli, bilinçli bir ara adım (sadece UI/wiring/E2E akışını doğrulamak için).
+- **Zero-Knowledge kısayolu çözüldü:** `LoginViewModel` artık gerçek bir `AuthKey`/`EncryptionKey` çifti türetiyor (client-side Argon2id, `GetSaltAsync`'ten alınan kullanıcıya özel salt'larla) ve backend'e ham şifre yerine bu `AuthKey`'i gönderiyor — önceki geçici stub tamamen kaldırıldı, hem Register hem Login akışı gerçek backend'e karşı uçtan uca doğrulandı.
+- **Düşük öncelikli güvenlik notu — `GET /auth/salt` timing side-channel:** Var olan/olmayan kullanıcılar için dönen JSON gövdesi yapısal olarak aynı (email enumeration'a karşı tasarlanmış), ama gerçek kullanıcıda DB sorgusu çalıştığı için yanıt süresi belirgin şekilde daha uzun (manuel test: ~224ms'e karşı ~6ms) — bu fark, yanıt gövdesine hiç bakmadan sadece süreyi ölçerek email enumeration'a imkan tanıyabilir. Olası düzeltme: sahte yanıt yoluna, gerçek DB sorgusu süresine yakın yapay bir gecikme eklemek. Henüz ele alınmadı.

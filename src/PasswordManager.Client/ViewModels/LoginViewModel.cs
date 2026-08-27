@@ -20,11 +20,17 @@ public partial class LoginViewModel : ObservableObject
 
     private readonly IAuthApiService _authApiService;
     private readonly ITokenStorageService _tokenStorageService;
+    private readonly IKeyDerivationService _keyDerivationService;
+    private byte[]? _encryptionKey;
 
-    public LoginViewModel(IAuthApiService authApiService, ITokenStorageService tokenStorageService)
+    public LoginViewModel(
+         IAuthApiService authApiService,
+         ITokenStorageService tokenStorageService,
+         IKeyDerivationService keyDerivationService)
     {
         _authApiService = authApiService;
         _tokenStorageService = tokenStorageService;
+        _keyDerivationService = keyDerivationService;
     }
 
     [RelayCommand]
@@ -35,9 +41,14 @@ public partial class LoginViewModel : ObservableObject
 
         try
         {
+            var salt = await _authApiService.GetSaltAsync(Email);
+            var authKeyBytes = await _keyDerivationService.DeriveKeyAsync(
+                Password, salt.AuthSalt,salt.KdfIterations,salt.KdfMemorySize,salt.KdfParallelism);
 
-            // TODO: Argon2id key derivation ile AuthKey üretilecek, şimdilik geçici olarak Password gönderiliyor
-            var response = await _authApiService.LoginAsync(new LoginRequest(Email, Password));
+            _encryptionKey = await _keyDerivationService.DeriveKeyAsync(
+                Password, salt.EncryptionSalt,salt.KdfIterations,salt.KdfMemorySize,salt.KdfParallelism);
+            var authKey = Convert.ToBase64String(authKeyBytes);
+            var response = await _authApiService.LoginAsync(new LoginRequest(Email, authKey));
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
             await Shell.Current.GoToAsync("//HomePage");
         }
@@ -50,4 +61,10 @@ public partial class LoginViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
+    [RelayCommand]
+private async Task GoToRegisterAsync()
+{
+    await Shell.Current.GoToAsync("RegisterPage");
+}
 }
