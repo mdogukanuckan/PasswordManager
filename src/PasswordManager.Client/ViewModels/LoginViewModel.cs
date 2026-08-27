@@ -21,16 +21,21 @@ public partial class LoginViewModel : ObservableObject
     private readonly IAuthApiService _authApiService;
     private readonly ITokenStorageService _tokenStorageService;
     private readonly IKeyDerivationService _keyDerivationService;
+    private readonly IVaultCryptoService _vaultCryptoService;
+
     private byte[]? _encryptionKey;
+    private byte[]? _vaultKey;
 
     public LoginViewModel(
          IAuthApiService authApiService,
          ITokenStorageService tokenStorageService,
-         IKeyDerivationService keyDerivationService)
+         IKeyDerivationService keyDerivationService,
+         IVaultCryptoService vaultCryptoService)
     {
         _authApiService = authApiService;
         _tokenStorageService = tokenStorageService;
         _keyDerivationService = keyDerivationService;
+        _vaultCryptoService = vaultCryptoService;
     }
 
     [RelayCommand]
@@ -49,6 +54,7 @@ public partial class LoginViewModel : ObservableObject
                 Password, salt.EncryptionSalt,salt.KdfIterations,salt.KdfMemorySize,salt.KdfParallelism);
             var authKey = Convert.ToBase64String(authKeyBytes);
             var response = await _authApiService.LoginAsync(new LoginRequest(Email, authKey));
+            _vaultKey = _vaultCryptoService.UnwrapKey(response.WrappedVaultKey,response.WrappedVaultKeyNonce,_encryptionKey);
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
             await Shell.Current.GoToAsync("//HomePage");
         }
