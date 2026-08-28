@@ -38,6 +38,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IKeyDerivationService, KeyDerivationService>();
 		builder.Services.AddSingleton<IVaultCryptoService, VaultCryptoService>();
 		builder.Services.AddSingleton<IVaultSessionService, VaultSessionService>();
+		builder.Services.AddSingleton<IVaultItemMapper, VaultItemMapper>();
 
 		builder.Services.AddTransient<AuthHeaderHandler>();
 

@@ -1,0 +1,10 @@
+using PasswordManager.Client.Models;
+using PasswordManager.Contracts.DTOs.VaultItem;
+
+namespace PasswordManager.Client.Services;
+
+public interface IVaultItemMapper
+{
+    CreateVaultItemRequest ToCreateRequest(VaultItemPayload payload, byte[] vaultKey);
+    VaultItemPayload ToPayload(VaultItemResponse response, byte[] vaultKey);
+}

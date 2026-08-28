@@ -4,19 +4,25 @@ namespace PasswordManager.Client.Services;
 
 public class VaultCryptoService : IVaultCryptoService
 {
-    private const int NonceSize = 12; 
-    private const int TagSize = 16;   
+    private const int NonceSize = 12; // AES-GCM standardı, 96 bit
+    private const int TagSize = 16;   // 128 bit
 
     public (string CipherTextBase64, string NonceBase64) WrapKey(byte[] keyToWrap, byte[] encryptionKey)
+        => Encrypt(keyToWrap, encryptionKey);
+
+    public byte[] UnwrapKey(string cipherTextBase64, string nonceBase64, byte[] encryptionKey)
+        => Decrypt(cipherTextBase64, nonceBase64, encryptionKey);
+
+    public (string CipherTextBase64, string NonceBase64) Encrypt(byte[] plaintext, byte[] key)
     {
         byte[] nonce = new byte[NonceSize];
         RandomNumberGenerator.Fill(nonce);
 
-        byte[] cipherText = new byte[keyToWrap.Length];
+        byte[] cipherText = new byte[plaintext.Length];
         byte[] tag = new byte[TagSize];
 
-        using var aesGcm = new AesGcm(encryptionKey, TagSize);
-        aesGcm.Encrypt(nonce, keyToWrap, cipherText, tag);
+        using var aesGcm = new AesGcm(key, TagSize);
+        aesGcm.Encrypt(nonce, plaintext, cipherText, tag);
 
         byte[] combined = new byte[cipherText.Length + tag.Length];
         Buffer.BlockCopy(cipherText, 0, combined, 0, cipherText.Length);
@@ -25,7 +31,7 @@ public class VaultCryptoService : IVaultCryptoService
         return (Convert.ToBase64String(combined), Convert.ToBase64String(nonce));
     }
 
-    public byte[] UnwrapKey(string cipherTextBase64, string nonceBase64, byte[] encryptionKey)
+    public byte[] Decrypt(string cipherTextBase64, string nonceBase64, byte[] key)
     {
         byte[] combined = Convert.FromBase64String(cipherTextBase64);
         byte[] nonce = Convert.FromBase64String(nonceBase64);
@@ -38,7 +44,7 @@ public class VaultCryptoService : IVaultCryptoService
 
         byte[] plainText = new byte[cipherLength];
 
-        using var aesGcm = new AesGcm(encryptionKey, TagSize);
+        using var aesGcm = new AesGcm(key, TagSize);
         aesGcm.Decrypt(nonce, cipherText, tag, plainText);
 
         return plainText;

@@ -98,10 +98,16 @@ Sunucu **hiçbir zaman** kullanıcının ana şifresini (master password) ya da 
 - [x] `LoginViewModel` + `LoginPage` — uçtan uca test edildi (gerçek backend + PostgreSQL'e karşı, Windows'ta)
 - [x] `HomePage` + login-sonrası Shell navigasyonu (`Shell.Current.GoToAsync("//HomePage")`, absolute route — `HomePage` `AppShell.xaml`'de `ShellContent` olarak tanımlı)
 - [x] Client-side Argon2id key derivation (`IKeyDerivationService`) — `LoginViewModel`'e kablolandı, artık gerçek `AuthKey`/`EncryptionKey` türetiliyor, ham şifre backend'e gitmiyor
-- [x] AES-256-GCM key wrapping çekirdeği (`IVaultCryptoService.WrapKey`/`UnwrapKey`) — `VaultKey`'i `EncryptionKey` ile sarmalamak için
+- [x] AES-256-GCM key wrapping çekirdeği + genel şifreleme (`IVaultCryptoService.WrapKey`/`UnwrapKey` ve `Encrypt`/`Decrypt`) — `WrapKey`/`UnwrapKey` artık `Encrypt`/`Decrypt`'i çağıran ince sarmalayıcılar, aynı AES-256-GCM mantığı hem key wrapping hem genel veri şifreleme için paylaşılıyor
 - [x] Register ekranı (`RegisterViewModel` + `RegisterPage`) — client salt'ları kendisi üretir, Argon2id ile `AuthKey`/`EncryptionKey` türetir, rastgele bir `VaultKey` üretip `WrapKey` ile sarmalar, başarılı kayıt sonrası otomatik login + `HomePage` navigasyonu — **uçtan uca test edildi (gerçek backend + PostgreSQL'e karşı)**
-- [ ] Vault listeleme / ekleme / düzenleme ekranları
-- [ ] Vault item alanlarının (kullanıcı adı, şifre metni vb.) AES-256-GCM ile şifrelenmesi/çözülmesi (wrap/unwrap çekirdeği hazır, henüz vault item CRUD akışına bağlanmadı)
+- [x] Login sonrası `VaultKey`, `WrappedVaultKey`/`WrappedVaultKeyNonce`'tan `UnwrapKey` ile elde ediliyor — AES-256-GCM'in unwrap tarafı da runtime'da doğrulandı (register'da wrap edilen key, login'de aynı şekilde açılabiliyor)
+- [x] `IVaultSessionService`/`VaultSessionService` (Singleton) — `VaultKey`'i sayfalar arası taşımak için, **sadece RAM'de** tutuluyor, hiçbir zaman `SecureStorage`'a/diske yazılmıyor (zero-knowledge garantisini zayıflatmamak için bilinçli bir tercih — access/refresh token'ların aksine)
+- [x] `IVaultItemApiService`/`VaultItemApiService` — backend'in `VaultItemController`'ını saran tip-güvenli client katmanı (`AuthApiService` ile aynı desende)
+- [x] `AuthHeaderHandler` (`DelegatingHandler`) — `VaultItemApiService`'in her isteğine `ITokenStorageService`'ten okunan access token'ı otomatik `Authorization: Bearer` header'ı olarak ekliyor, servisin kendisi token'dan habersiz kalıyor
+- [x] `IVaultItemMapper`/`VaultItemMapper` — plaintext `VaultItemPayload` (Title/Username/Password/Notes) ile backend'in gördüğü opak `EncryptedData`/`Nonce` arasındaki dönüşüm; JSON serileştirme + `IVaultCryptoService.Encrypt`/`Decrypt` burada birleşiyor, backend gerçek alanları asla görmüyor
+- [ ] `HomePage`, gerçek bir vault listesine dönüştürüldü (`HomeViewModel` artık `CollectionView` ile `VaultItemListEntry` listesi gösteriyor, sayfa her göründüğünde `OnAppearing` ile `LoadVaultItemsCommand` otomatik tetikleniyor) — kod tarafı tamamlandı, henüz runtime'da (gerçek backend'e karşı) doğrulanmadı
+- [ ] Vault item ekleme ekranı
+- [ ] Vault item düzenleme/silme ekranları
 
 ## Notlar
 
