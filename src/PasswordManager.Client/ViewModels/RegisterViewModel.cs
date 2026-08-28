@@ -28,17 +28,20 @@ public partial class RegisterViewModel : ObservableObject
     private readonly IKeyDerivationService _keyDerivationService;
     private readonly IVaultCryptoService _vaultCryptoService;
     private readonly ITokenStorageService _tokenStorageService;
+    private readonly IVaultSessionService _vaultSessionService;
 
     public RegisterViewModel(
         IAuthApiService authApiService,
         IKeyDerivationService keyDerivationService,
         IVaultCryptoService vaultCryptoService,
-        ITokenStorageService tokenStorageService)
+        ITokenStorageService tokenStorageService,
+        IVaultSessionService vaultSessionService)
     {
         _authApiService = authApiService;
         _keyDerivationService = keyDerivationService;
         _vaultCryptoService = vaultCryptoService;
         _tokenStorageService = tokenStorageService;
+        _vaultSessionService = vaultSessionService;
     }
 
     [RelayCommand]
@@ -70,6 +73,7 @@ public partial class RegisterViewModel : ObservableObject
                 wrapped.NonceBase64);
 
             var response = await _authApiService.RegisterAsync(request);
+            _vaultSessionService.SetVaultKey(vaultKey);
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
             await Shell.Current.GoToAsync("//HomePage");
         }

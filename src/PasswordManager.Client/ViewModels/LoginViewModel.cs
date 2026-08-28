@@ -22,20 +22,23 @@ public partial class LoginViewModel : ObservableObject
     private readonly ITokenStorageService _tokenStorageService;
     private readonly IKeyDerivationService _keyDerivationService;
     private readonly IVaultCryptoService _vaultCryptoService;
+    private readonly IVaultSessionService _vaultSessionService;
+
 
     private byte[]? _encryptionKey;
-    private byte[]? _vaultKey;
 
     public LoginViewModel(
          IAuthApiService authApiService,
          ITokenStorageService tokenStorageService,
          IKeyDerivationService keyDerivationService,
-         IVaultCryptoService vaultCryptoService)
+         IVaultCryptoService vaultCryptoService,
+         IVaultSessionService vaultSessionService)
     {
         _authApiService = authApiService;
         _tokenStorageService = tokenStorageService;
         _keyDerivationService = keyDerivationService;
         _vaultCryptoService = vaultCryptoService;
+        _vaultSessionService = vaultSessionService;
     }
 
     [RelayCommand]
@@ -48,13 +51,14 @@ public partial class LoginViewModel : ObservableObject
         {
             var salt = await _authApiService.GetSaltAsync(Email);
             var authKeyBytes = await _keyDerivationService.DeriveKeyAsync(
-                Password, salt.AuthSalt,salt.KdfIterations,salt.KdfMemorySize,salt.KdfParallelism);
+                Password, salt.AuthSalt, salt.KdfIterations, salt.KdfMemorySize, salt.KdfParallelism);
 
             _encryptionKey = await _keyDerivationService.DeriveKeyAsync(
-                Password, salt.EncryptionSalt,salt.KdfIterations,salt.KdfMemorySize,salt.KdfParallelism);
+                Password, salt.EncryptionSalt, salt.KdfIterations, salt.KdfMemorySize, salt.KdfParallelism);
             var authKey = Convert.ToBase64String(authKeyBytes);
             var response = await _authApiService.LoginAsync(new LoginRequest(Email, authKey));
-            _vaultKey = _vaultCryptoService.UnwrapKey(response.WrappedVaultKey,response.WrappedVaultKeyNonce,_encryptionKey);
+            var vaultKey = _vaultCryptoService.UnwrapKey(response.WrappedVaultKey, response.WrappedVaultKeyNonce, _encryptionKey);
+            _vaultSessionService.SetVaultKey(vaultKey);
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
             await Shell.Current.GoToAsync("//HomePage");
         }
@@ -69,8 +73,8 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-private async Task GoToRegisterAsync()
-{
-    await Shell.Current.GoToAsync("RegisterPage");
-}
+    private async Task GoToRegisterAsync()
+    {
+        await Shell.Current.GoToAsync("RegisterPage");
+    }
 }
