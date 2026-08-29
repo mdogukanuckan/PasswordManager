@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PasswordManager.Client.Views.AddVaultItemPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Vault Item Ekle">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Entry
+            Placeholder="Başlık"
+            Text="{Binding Title}" />
+
+        <Entry
+            Placeholder="Kullanıcı adı"
+            Text="{Binding Username}" />
+
+        <Entry
+            Placeholder="Şifre"
+            Text="{Binding Password}"
+            IsPassword="True" />
+
+        <Entry
+            Placeholder="Notlar"
+            Text="{Binding Notes}" />
+
+        <Button
+            Text="Kaydet"
+            Command="{Binding SaveCommand}" />
+
+        <Label
+            Text="{Binding ErrorMessage}"
+            TextColor="Red" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

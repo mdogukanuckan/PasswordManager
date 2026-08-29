@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PasswordManager.Client.Models;
 using PasswordManager.Client.Services.Vault;
+using PasswordManager.Client.Views;
 
 namespace PasswordManager.Client.ViewModels;
 
@@ -62,5 +63,10 @@ public partial class HomeViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+    [RelayCommand]
+    private async Task GoToAddItemAsync()
+    {
+        await Shell.Current.GoToAsync(nameof(AddVaultItemPage));
     }
 }

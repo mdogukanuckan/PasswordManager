@@ -3,21 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PasswordManager.Client.Views.HomePage">
 
-    <VerticalStackLayout Padding="30" Spacing="15">
+    <VerticalStackLayout Padding="30"
+                         Spacing="15">
 
-        <Label Text="{Binding ErrorMessage}" TextColor="Red"/>
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"/>
 
         <CollectionView ItemsSource="{Binding VaultItems}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <VerticalStackLayout Padding="10" Spacing="4">
-                        <Label Text="{Binding Payload.Title}" FontAttributes="Bold"/>
+                    <VerticalStackLayout Padding="10"
+                                         Spacing="4">
+                        <Label Text="{Binding Payload.Title}"
+                               FontAttributes="Bold"/>
                         <Label Text="{Binding Payload.Username}"/>
+
                     </VerticalStackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
+        <Button Text="Yeni Ekle"
+                Command="{Binding GoToAddItemCommand}"/>
     </VerticalStackLayout>
 
 </ContentPage>
