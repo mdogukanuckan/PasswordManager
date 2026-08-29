@@ -1,4 +1,4 @@
-namespace PasswordManager.Client.Services;
+namespace PasswordManager.Client.Services.Vault;
 
 public class VaultSessionService : IVaultSessionService
 {

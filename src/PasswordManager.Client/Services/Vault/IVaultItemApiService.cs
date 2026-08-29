@@ -1,6 +1,6 @@
 using PasswordManager.Contracts.DTOs.VaultItem;
 
-namespace PasswordManager.Client.Services;
+namespace PasswordManager.Client.Services.Vault;
 
 public interface IVaultItemApiService
 {

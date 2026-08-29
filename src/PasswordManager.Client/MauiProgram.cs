@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using PasswordManager.Client.Services;
+using PasswordManager.Client.Services.Auth;
+using PasswordManager.Client.Services.Vault;
 using PasswordManager.Client.Services.Http;
 using PasswordManager.Client.ViewModels;
 using PasswordManager.Client.Views;

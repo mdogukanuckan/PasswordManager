@@ -1,5 +1,5 @@
 using System.Net.Http.Headers;
-using PasswordManager.Client.Services;
+using PasswordManager.Client.Services.Auth;
 
 namespace PasswordManager.Client.Services.Http;
 

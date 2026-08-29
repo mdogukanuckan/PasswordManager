@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PasswordManager.Client.Services;
+using PasswordManager.Client.Services.Auth;
+using PasswordManager.Client.Services.Vault;
 using PasswordManager.Client.Services.Exceptions;
 using PasswordManager.Contracts.DTOs.Auth;
 using System.Security.Cryptography;
