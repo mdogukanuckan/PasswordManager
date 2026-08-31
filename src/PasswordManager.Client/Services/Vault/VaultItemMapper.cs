@@ -27,4 +27,12 @@ public class VaultItemMapper : IVaultItemMapper
         byte[] plaintextBytes = _vaultCryptoService.Decrypt(response.EncryptedData, response.Nonce, vaultKey);
         return JsonSerializer.Deserialize<VaultItemPayload>(plaintextBytes)!;
     }
+
+    public UpdateVaultItemRequest ToUpdateRequest(VaultItemPayload payload, byte[] vaultKey)
+    {
+        byte[] plaintextBytes = JsonSerializer.SerializeToUtf8Bytes(payload);
+        var encrypted = _vaultCryptoService.Encrypt(plaintextBytes, vaultKey);
+
+        return new UpdateVaultItemRequest(encrypted.CipherTextBase64, encrypted.NonceBase64);
+    }
 }

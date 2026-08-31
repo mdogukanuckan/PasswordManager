@@ -7,4 +7,5 @@ public interface IVaultItemMapper
 {
     CreateVaultItemRequest ToCreateRequest(VaultItemPayload payload, byte[] vaultKey);
     VaultItemPayload ToPayload(VaultItemResponse response, byte[] vaultKey);
+    UpdateVaultItemRequest ToUpdateRequest(VaultItemPayload payload, byte[] vaultKey);
 }
