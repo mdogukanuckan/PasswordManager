@@ -15,8 +15,30 @@ public partial class HomeViewModel : ObservableObject
 
     [ObservableProperty]
     public partial ObservableCollection<VaultItemListEntry> VaultItems { get; set; } = new();
-    [ObservableProperty] 
+
+    [ObservableProperty]
+    public partial ObservableCollection<VaultItemListEntry> FilteredItems { get; set; } = new();
+
+    [ObservableProperty]
+    public partial ObservableCollection<VaultCategory> Categories { get; set; } = new();
+
+    [ObservableProperty]
+    public partial VaultCategory? SelectedCategory { get; set; }
+
+    [ObservableProperty]
     public partial VaultItemListEntry? SelectedEntry { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasSelection { get; set; }
+
+    [ObservableProperty]
+    public partial string? SearchText { get; set; }
+
+    [ObservableProperty]
+    public partial string? UserName { get; set; }
+
+    [ObservableProperty]
+    public partial string UserInitial { get; set; } = "?";
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -45,6 +67,7 @@ public partial class HomeViewModel : ObservableObject
 
         IsBusy = true;
         ErrorMessage = null;
+        UserName = _vaultSessionService.UserEmail;
 
         try
         {
@@ -54,8 +77,12 @@ public partial class HomeViewModel : ObservableObject
             foreach (var response in responses)
             {
                 var payload = _vaultItemMapper.ToPayload(response, _vaultSessionService.VaultKey);
-                VaultItems.Add(new VaultItemListEntry(response.Id, payload));
+                VaultItems.Add(new VaultItemListEntry(response.Id, payload, response.CreatedAt, response.ModifiedAt));
             }
+
+            RecomputeCategories();
+            SelectedCategory = Categories.FirstOrDefault();
+            RefreshFilteredItems();
         }
         catch (Services.Exceptions.ApiException ex)
         {
@@ -66,23 +93,80 @@ public partial class HomeViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
     [RelayCommand]
     private async Task GoToAddItemAsync()
     {
         await Shell.Current.GoToAsync(nameof(AddVaultItemPage));
     }
-   partial void OnSelectedEntryChanged(VaultItemListEntry? value)
+
+    [RelayCommand]
+    private async Task OpenDetailAsync(VaultItemListEntry? entry)
     {
-        if(value is null)
+        entry ??= SelectedEntry;
+        if (entry is null)
         {
             return;
         }
-        _ = NavigateToDetailAsync(value);
+
+        await Shell.Current.GoToAsync(nameof(VaultItemDetailPage), new Dictionary<string, object> { { "Item", entry } });
     }
 
-    private async Task NavigateToDetailAsync(VaultItemListEntry entry)
+    [RelayCommand]
+    private async Task LockAsync()
     {
-        await Shell.Current.GoToAsync(nameof(VaultItemDetailPage), new Dictionary<string, object> { { "Item", entry } });
-        SelectedEntry = null;
+        _vaultSessionService.Clear();
+        await Shell.Current.GoToAsync("//LoginPage");
+    }
+
+    partial void OnSelectedEntryChanged(VaultItemListEntry? value)
+    {
+        HasSelection = value is not null;
+    }
+
+    partial void OnSearchTextChanged(string? value)
+    {
+        RefreshFilteredItems();
+    }
+
+    partial void OnSelectedCategoryChanged(VaultCategory? value)
+    {
+        RefreshFilteredItems();
+    }
+
+    partial void OnUserNameChanged(string? value)
+    {
+        UserInitial = string.IsNullOrWhiteSpace(value) ? "?" : value.Trim()[0].ToString().ToUpperInvariant();
+    }
+
+    private void RecomputeCategories()
+    {
+        var groups = VaultItems
+            .GroupBy(i => string.IsNullOrWhiteSpace(i.Payload.Category) ? "Diğer" : i.Payload.Category)
+            .OrderBy(g => g.Key);
+
+        var categories = new List<VaultCategory> { new("Tümü", VaultItems.Count) };
+        categories.AddRange(groups.Select(g => new VaultCategory(g.Key, g.Count())));
+
+        Categories = new ObservableCollection<VaultCategory>(categories);
+    }
+
+    private void RefreshFilteredItems()
+    {
+        IEnumerable<VaultItemListEntry> query = VaultItems;
+
+        if (SelectedCategory is not null && SelectedCategory.Name != "Tümü")
+        {
+            query = query.Where(i => string.Equals(i.Payload.Category, SelectedCategory.Name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            query = query.Where(i =>
+                i.Payload.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                i.Payload.Username.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        FilteredItems = new ObservableCollection<VaultItemListEntry>(query);
     }
 }

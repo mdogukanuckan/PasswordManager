@@ -5,4 +5,27 @@
     xmlns:maui="using:Microsoft.Maui"
     xmlns:local="using:PasswordManager.Client.WinUI">
 
+    <maui:MauiWinUIApplication.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid Background="Transparent">
+                            <ScrollViewer x:Name="ContentElement"
+                                BorderThickness="0"
+                                IsTabStop="False"
+                                Margin="{TemplateBinding Padding}"
+                                Padding="0"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                AutomationProperties.AccessibilityView="Raw" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </maui:MauiWinUIApplication.Resources>
+
 </maui:MauiWinUIApplication>

@@ -1,27 +1,96 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PasswordManager.Client.Views.RegisterPage">
+             x:Class="PasswordManager.Client.Views.RegisterPage"
+             Shell.NavBarIsVisible="False"
+             Title="Kayıt Ol">
 
-    <VerticalStackLayout Padding="30"
-                         Spacing="15">
+    <Grid ColumnDefinitions="520,*">
 
-        <Entry
-            Placeholder="E-posta"
-            Text="{Binding Email}"/>
+        <Grid Grid.Column="0"
+              BackgroundColor="#17131D"
+              Padding="48,56"
+              RowDefinitions="Auto,*,Auto">
 
-        <Entry
-            Placeholder="Şifre"
-            Text="{Binding Password}"
-            IsPassword="True"/>
+            <HorizontalStackLayout Grid.Row="0" Spacing="12">
+                <Border WidthRequest="30" HeightRequest="30" StrokeThickness="0"
+                        BackgroundColor="{StaticResource Accent}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="9" />
+                    </Border.StrokeShape>
+                </Border>
+                <Label Text="PasswordManager" FontSize="15" FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
+            </HorizontalStackLayout>
 
-        <Button
-            Text="Kayıt Ol"
-            Command="{Binding RegisterCommand}"/>
+            <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="Center">
+                <Label Text="Bir hesap,&#10;sınırsız kayıt."
+                       FontSize="36" FontAttributes="Bold" LineHeight="1.15"
+                       TextColor="{StaticResource TextPrimary}" />
+                <Label Text="Ana şifreniz cihazınızdan hiç çıkmaz. Kaybederseniz kasa kurtarılamaz — güvenli bir yere not alın."
+                       FontSize="14" LineHeight="1.5" MaximumWidthRequest="340"
+                       TextColor="{StaticResource TextMuted}" />
+            </VerticalStackLayout>
 
-        <Label
-            Text="{Binding ErrorMessage}"/>
+            <VerticalStackLayout Grid.Row="2" Spacing="10">
+                <Label Text="•  AES-256 yerel şifreleme" Style="{StaticResource Caps}" />
+                <Label Text="•  Sıfır bilgi mimarisi" Style="{StaticResource Caps}" />
+            </VerticalStackLayout>
+        </Grid>
 
-    </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="1"
+                             WidthRequest="400"
+                             Spacing="24"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center">
 
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Hesap oluştur" Style="{StaticResource H2}" FontSize="26" />
+                <Label Text="Ana şifrenizi kaybederseniz kasa kurtarılamaz." Style="{StaticResource Muted}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="16">
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Text="E-posta" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry Placeholder="ad@ornek.com" Keyboard="Email"
+                               Text="{Binding Email}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Text="Ana Şifre" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry Placeholder="••••••••••" IsPassword="True"
+                               Text="{Binding Password}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Text="Ana Şifre (Tekrar)" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry Placeholder="••••••••••" IsPassword="True"
+                               Text="{Binding ConfirmPassword}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <Label Text="En az 12 karakter, bir sayı ve bir sembol önerilir."
+                       FontSize="12" TextColor="{StaticResource TextFaint}" />
+
+                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="18">
+                <Button Text="Kayıt Ol" Style="{StaticResource PrimaryButton}"
+                        HeightRequest="46" Command="{Binding RegisterCommand}" />
+                <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
+                    <Label Text="Zaten hesabın var mı?" Style="{StaticResource Muted}" VerticalOptions="Center" />
+                    <Button Text="Giriş yap" Style="{StaticResource LinkButton}" FontSize="13"
+                            Command="{Binding GoToLoginCommand}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

@@ -8,6 +8,10 @@ namespace PasswordManager.Client.ViewModels;
 
 public partial class AddVaultItemViewModel : ObservableObject
 {
+    private const string DefaultCategory = "Kişisel";
+    private const int GeneratedPasswordLength = 16;
+    private const string PasswordCharset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_=+";
+
     private readonly IVaultItemMapper _vaultItemMapper;
     private readonly IVaultItemApiService _vaultItemApiService;
     private readonly IVaultSessionService _vaultSessionService;
@@ -20,6 +24,8 @@ public partial class AddVaultItemViewModel : ObservableObject
     public partial string Password { get; set; } = string.Empty;
     [ObservableProperty]
     public partial string Notes { get; set; } = string.Empty;
+    [ObservableProperty]
+    public partial string Category { get; set; } = DefaultCategory;
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
@@ -46,6 +52,12 @@ public partial class AddVaultItemViewModel : ObservableObject
 
         try
         {
+            if (string.IsNullOrWhiteSpace(Title))
+            {
+                ErrorMessage = "Başlık boş bırakılamaz.";
+                return;
+            }
+
             var vaultKey = _vaultSessionService.VaultKey;
             if (vaultKey is null)
             {
@@ -56,7 +68,8 @@ public partial class AddVaultItemViewModel : ObservableObject
                 Title,
                 Username,
                 Password,
-                Notes);
+                Notes,
+                string.IsNullOrWhiteSpace(Category) ? DefaultCategory : Category);
 
             var request = _vaultItemMapper.ToCreateRequest(
                 payload,
@@ -74,5 +87,28 @@ public partial class AddVaultItemViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private void GeneratePassword()
+    {
+        Password = GenerateSecurePassword();
+    }
+
+    [RelayCommand]
+    private async Task CancelAsync()
+    {
+        await Shell.Current.GoToAsync("..");
+    }
+
+    private static string GenerateSecurePassword()
+    {
+        var bytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(GeneratedPasswordLength);
+        var chars = new char[GeneratedPasswordLength];
+        for (int i = 0; i < GeneratedPasswordLength; i++)
+        {
+            chars[i] = PasswordCharset[bytes[i] % PasswordCharset.Length];
+        }
+        return new string(chars);
     }
 }

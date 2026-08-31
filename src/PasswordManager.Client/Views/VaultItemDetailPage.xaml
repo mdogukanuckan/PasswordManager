@@ -1,33 +1,54 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage
     x:Class="PasswordManager.Client.Views.VaultItemDetailPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Vault Item Detay">
-    <VerticalStackLayout Padding="30" Spacing="15">
-        <Entry
-            Placeholder="Başlık"
-            Text="{Binding Title}" 
-            IsReadOnly="True"/>
-        <Entry
-            Placeholder="Kullanıcı Adı"
-            Text="{Binding Username}"
-            IsReadOnly="True" />
-        <Entry
-            Placeholder="Şifre"
-            Text="{Binding Password}"
-            IsReadOnly="True"
-            IsPassword="{Binding IsPasswordMasked}" />
-            
-        <Entry
-            Placeholder="Notlar"
-            Text="{Binding Notes}"
-            IsReadOnly="True" />
-        <Button 
-            Text ="Şifreyi Göster/Gizle"
-            Command ="{Binding ToggleMaskCommand}"/>
-    </VerticalStackLayout>
+    Title="Kayıt Detayı">
 
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="18" MaximumWidthRequest="480" HorizontalOptions="Center">
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Başlık" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource FieldBorder}">
+                    <Entry Text="{Binding Title}" IsReadOnly="True" FontSize="14" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Kullanıcı Adı" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource FieldBorder}">
+                    <Entry Text="{Binding Username}" IsReadOnly="True" FontSize="14" FontFamily="Consolas" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Şifre" Style="{StaticResource FieldLabel}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Border Grid.Column="0" Style="{StaticResource FieldBorder}">
+                        <Entry Text="{Binding Password}" IsReadOnly="True"
+                               IsPassword="{Binding IsPasswordMasked}"
+                               Style="{StaticResource MonoEntry}" FontSize="14" />
+                    </Border>
+                    <Button Grid.Column="1" Text="{Binding IsPasswordMasked, Converter={StaticResource MaskToLabelConverter}}"
+                            Style="{StaticResource GhostButton}" TextColor="{StaticResource Accent}"
+                            HeightRequest="44" Command="{Binding ToggleMaskCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Notlar" Style="{StaticResource FieldLabel}" />
+                <Border BackgroundColor="{StaticResource BgField}" Stroke="{StaticResource Stroke}"
+                        StrokeThickness="1" Padding="13,11">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding Notes}" FontSize="13" LineHeight="1.5"
+                           TextColor="{StaticResource TextSecondary}" />
+                </Border>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

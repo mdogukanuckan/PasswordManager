@@ -4,5 +4,6 @@ public record VaultItemPayload(
     string Title,
     string Username,
     string Password,
-    string Notes
+    string Notes,
+    string Category = "Kişisel"
 );

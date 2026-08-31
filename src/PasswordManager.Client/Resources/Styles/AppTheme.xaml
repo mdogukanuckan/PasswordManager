@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Renkler -->
+    <Color x:Key="BgBase">#121014</Color>
+    <Color x:Key="BgPanel">#15121A</Color>
+    <Color x:Key="BgSurface">#17141B</Color>
+    <Color x:Key="BgField">#1B1722</Color>
+    <Color x:Key="BgHover">#1F1A28</Color>
+    <Color x:Key="BgTitleBar">#0E0C11</Color>
+    <Color x:Key="Stroke">#2E2839</Color>
+    <Color x:Key="StrokeSoft">#241F2D</Color>
+    <Color x:Key="Accent">#B79CEB</Color>
+    <Color x:Key="AccentHover">#C7AEF2</Color>
+    <Color x:Key="AccentInk">#1A1322</Color>
+    <Color x:Key="TextPrimary">#EDEAF2</Color>
+    <Color x:Key="TextSecondary">#C9C3D4</Color>
+    <Color x:Key="TextMuted">#9A93A6</Color>
+    <Color x:Key="TextFaint">#6E6879</Color>
+    <Color x:Key="Danger">#D98A9A</Color>
+    <Color x:Key="DangerStroke">#3A2630</Color>
+
+    <!-- Sayfa -->
+    <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+        <Setter Property="BackgroundColor" Value="{StaticResource BgBase}" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <!-- Tipografi -->
+    <Style x:Key="H1" TargetType="Label">
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+    </Style>
+
+    <Style x:Key="H2" TargetType="Label">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+    </Style>
+
+    <Style x:Key="Body" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+    </Style>
+
+    <Style x:Key="Muted" TargetType="Label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+    </Style>
+
+    <Style x:Key="FieldLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+    </Style>
+
+    <Style x:Key="Caps" TargetType="Label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="CharacterSpacing" Value="1" />
+        <Setter Property="TextColor" Value="{StaticResource TextFaint}" />
+    </Style>
+
+    <!-- Alanlar: Border + Entry -->
+    <Style x:Key="FieldBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource BgField}" />
+        <Setter Property="Stroke" Value="{StaticResource Stroke}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="HeightRequest" Value="44" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="8" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextFaint}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <Style TargetType="Editor">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextFaint}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="MonoEntry" TargetType="Entry">
+    <Setter Property="BackgroundColor" Value="Transparent" />
+    <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+    <Setter Property="PlaceholderColor" Value="{StaticResource TextFaint}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="VerticalOptions" Value="Center" />
+    <Setter Property="FontFamily" Value="Consolas" />
+</Style>
+
+    <!-- Butonlar -->
+    <Style x:Key="PrimaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+        <Setter Property="TextColor" Value="{StaticResource AccentInk}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HeightRequest" Value="42" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource AccentHover}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="BorderColor" Value="{StaticResource Stroke}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HeightRequest" Value="38" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource BgHover}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style x:Key="LinkButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource Accent}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="HeightRequest" Value="28" />
+    </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
+        <Setter Property="TextColor" Value="{StaticResource Danger}" />
+        <Setter Property="BorderColor" Value="{StaticResource DangerStroke}" />
+    </Style>
+
+    <!-- Kartlar -->
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource BgSurface}" />
+        <Setter Property="Stroke" Value="{StaticResource Stroke}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="12" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Avatar" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="#241E2E" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="WidthRequest" Value="30" />
+        <Setter Property="HeightRequest" Value="30" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="8" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

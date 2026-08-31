@@ -21,6 +21,8 @@ public partial class RegisterViewModel : ObservableObject
     [ObservableProperty]
     public partial string Password { get; set; } = string.Empty;
     [ObservableProperty]
+    public partial string ConfirmPassword { get; set; } = string.Empty;
+    [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -48,8 +50,21 @@ public partial class RegisterViewModel : ObservableObject
     [RelayCommand]
     private async Task RegisterAsync()
     {
-        IsBusy = true;
         ErrorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        {
+            ErrorMessage = "E-posta ve ana şifre zorunludur.";
+            return;
+        }
+
+        if (Password != ConfirmPassword)
+        {
+            ErrorMessage = "Ana şifreler eşleşmiyor.";
+            return;
+        }
+
+        IsBusy = true;
 
         try
         {
@@ -75,6 +90,7 @@ public partial class RegisterViewModel : ObservableObject
 
             var response = await _authApiService.RegisterAsync(request);
             _vaultSessionService.SetVaultKey(vaultKey);
+            _vaultSessionService.SetUserEmail(Email);
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
             await Shell.Current.GoToAsync("//HomePage");
         }
@@ -86,5 +102,11 @@ public partial class RegisterViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task GoToLoginAsync()
+    {
+        await Shell.Current.GoToAsync("..");
     }
 }

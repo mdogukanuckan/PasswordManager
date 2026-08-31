@@ -1,29 +1,176 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PasswordManager.Client.Views.HomePage">
+             xmlns:models="clr-namespace:PasswordManager.Client.Models"
+             x:Class="PasswordManager.Client.Views.HomePage"
+             Shell.NavBarIsVisible="False"
+             Title="Kasa">
 
-    <VerticalStackLayout Padding="30"
-                         Spacing="15">
+    <Grid ColumnDefinitions="232,*,360">
 
-        <Label Text="{Binding ErrorMessage}"
-               TextColor="Red"/>
+        <!-- 1) Sol kategori paneli -->
+        <Grid Grid.Column="0" BackgroundColor="{StaticResource BgPanel}"
+              Padding="12,20" RowDefinitions="Auto,*,Auto">
 
-        <CollectionView ItemsSource="{Binding VaultItems}" SelectionMode="Single" SelectedItem ="{Binding SelectedEntry}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <VerticalStackLayout Padding="10"
-                                         Spacing="4">
-                        <Label Text="{Binding Payload.Title}"
-                               FontAttributes="Bold"/>
-                        <Label Text="{Binding Payload.Username}"/>
+            <Label Grid.Row="0" Text="KASA" Style="{StaticResource Caps}" Margin="10,4,10,14" />
 
-                    </VerticalStackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-        <Button Text="Yeni Ekle"
-                Command="{Binding GoToAddItemCommand}"/>
-    </VerticalStackLayout>
+            <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding Categories}"
+                            SelectedItem="{Binding SelectedCategory}"
+                            SelectionMode="Single">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:VaultCategory">
+                        <Grid ColumnDefinitions="*,Auto" Padding="10,9" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="{Binding Name}" FontSize="13"
+                                   TextColor="{StaticResource TextSecondary}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding Count}" FontSize="12"
+                                   TextColor="{StaticResource TextFaint}" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="10" Padding="10,14,10,0">
+                <Border Grid.Column="0" Style="{StaticResource Avatar}" WidthRequest="26" HeightRequest="26">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="13" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding UserInitial}" FontSize="11" TextColor="{StaticResource TextSecondary}"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="{Binding UserName}" FontSize="13" TextColor="{StaticResource TextPrimary}"
+                           LineBreakMode="TailTruncation" />
+                    <Label Text="Kilitle" FontSize="11" TextColor="{StaticResource TextFaint}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding LockCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+        <!-- 2) Liste -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*">
+
+            <VerticalStackLayout Grid.Row="0" Padding="28,24,28,18" Spacing="18">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="Tüm Kayıtlar" Style="{StaticResource H2}" FontSize="22"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="+ Yeni Ekle" Style="{StaticResource PrimaryButton}"
+                            HeightRequest="36" FontSize="13" Command="{Binding GoToAddItemCommand}" />
+                </Grid>
+                <Border Style="{StaticResource FieldBorder}" HeightRequest="38" BackgroundColor="{StaticResource BgSurface}">
+                    <Entry Placeholder="Ara: başlık, kullanıcı adı…" FontSize="13"
+                           Text="{Binding SearchText}" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Label Grid.Row="1" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}"
+                   FontSize="13" Margin="28,0,28,10" />
+
+            <!-- Tablo başlıkları -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,200,120" Padding="28,0,28,10">
+                <Label Grid.Column="0" Text="BAŞLIK" Style="{StaticResource Caps}" />
+                <Label Grid.Column="1" Text="KULLANICI ADI" Style="{StaticResource Caps}" />
+                <Label Grid.Column="2" Text="GÜNCELLEME" Style="{StaticResource Caps}" HorizontalTextAlignment="End" />
+            </Grid>
+
+            <CollectionView Grid.Row="3"
+                            Margin="16,6,16,0"
+                            ItemsSource="{Binding FilteredItems}"
+                            SelectedItem="{Binding SelectedEntry}"
+                            SelectionMode="Single">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:VaultItemListEntry">
+                        <Grid ColumnDefinitions="*,200,120" Padding="12,13" ColumnSpacing="12">
+                            <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Grid.Column="0" Style="{StaticResource Avatar}">
+                                    <Label Text="{Binding Initial}" FontSize="12" FontAttributes="Bold"
+                                           TextColor="{StaticResource Accent}"
+                                           HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Payload.Title}" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="{Binding Payload.Category}" FontSize="11" TextColor="{StaticResource TextFaint}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label Grid.Column="1" Text="{Binding Payload.Username}" FontSize="13" FontFamily="Consolas"
+                                   TextColor="{StaticResource TextMuted}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="{Binding UpdatedText}" FontSize="12"
+                                   TextColor="{StaticResource TextFaint}"
+                                   HorizontalTextAlignment="End" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- 3) Detay paneli (önizleme) -->
+        <Grid Grid.Column="2" BackgroundColor="{StaticResource BgPanel}"
+              Padding="24,26" RowDefinitions="Auto,Auto,*">
+
+            <Label Grid.Row="0" Text="Bir kayıt seçin" Style="{StaticResource Muted}"
+                   IsVisible="{Binding HasSelection, Converter={StaticResource InverseBoolConverter}}" />
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="14"
+                  IsVisible="{Binding HasSelection}">
+                <Border Grid.Column="0" Style="{StaticResource Avatar}" WidthRequest="44" HeightRequest="44">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding SelectedEntry.Initial}" FontSize="16" FontAttributes="Bold"
+                           TextColor="{StaticResource Accent}"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                    <Label Text="{Binding SelectedEntry.Payload.Title}" FontSize="16" FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="{Binding SelectedEntry.MetaText}" FontSize="12" TextColor="{StaticResource TextFaint}" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="14" IsVisible="{Binding HasSelection}">
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="KULLANICI ADI" Style="{StaticResource Caps}" />
+                    <Border BackgroundColor="{StaticResource BgField}" Stroke="{StaticResource StrokeSoft}"
+                            StrokeThickness="1" Padding="13,11">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding SelectedEntry.Payload.Username}" FontSize="13" FontFamily="Consolas"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="ŞİFRE" Style="{StaticResource Caps}" />
+                    <Border BackgroundColor="{StaticResource BgField}" Stroke="{StaticResource StrokeSoft}"
+                            StrokeThickness="1" Padding="13,11">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label Text="••••••••••••" FontSize="13" FontFamily="Consolas" CharacterSpacing="1"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="NOTLAR" Style="{StaticResource Caps}" />
+                    <Border BackgroundColor="{StaticResource BgField}" Stroke="{StaticResource StrokeSoft}"
+                            StrokeThickness="1" Padding="13,11">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding SelectedEntry.Payload.Notes}" FontSize="13" LineHeight="1.5"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <Button Text="Detayları Aç" Style="{StaticResource GhostButton}"
+                        Command="{Binding OpenDetailCommand}" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>

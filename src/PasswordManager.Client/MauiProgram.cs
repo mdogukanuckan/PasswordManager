@@ -19,6 +19,16 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
+#if WINDOWS
+Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("RemoveNativeBorder", (handler, view) =>
+{
+    handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+});
+Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder", (handler, view) =>
+{
+    handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+});
+#endif
 
 #if DEBUG
 		builder.Logging.AddDebug();

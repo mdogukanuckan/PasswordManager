@@ -60,6 +60,7 @@ public partial class LoginViewModel : ObservableObject
             var response = await _authApiService.LoginAsync(new LoginRequest(Email, authKey));
             var vaultKey = _vaultCryptoService.UnwrapKey(response.WrappedVaultKey, response.WrappedVaultKeyNonce, _encryptionKey);
             _vaultSessionService.SetVaultKey(vaultKey);
+            _vaultSessionService.SetUserEmail(Email);
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
             await Shell.Current.GoToAsync("//HomePage");
         }

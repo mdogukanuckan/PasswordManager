@@ -1,38 +1,155 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PasswordManager.Client.Views.AddVaultItemPage"
+             Shell.NavBarIsVisible="False"
+             Shell.PresentationMode="ModalAnimated"
+             BackgroundColor="#B3080608"
+             Title="Yeni Kayıt">
 
-<ContentPage
-    x:Class="PasswordManager.Client.Views.AddVaultItemPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Vault Item Ekle">
+    <Grid>
+        <Border Style="{StaticResource Card}"
+                WidthRequest="520"
+                Padding="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+            <VerticalStackLayout>
 
-        <Entry
-            Placeholder="Başlık"
-            Text="{Binding Title}" />
+                <Grid ColumnDefinitions="*,Auto"
+                        Padding="28,24,28,20">
+                    <VerticalStackLayout Grid.Column="0"
+                            Spacing="5">
+                        <Label Text="Yeni Kayıt"
+                                FontSize="19"
+                                FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Kasaya yeni bir şifre kaydı ekleyin."
+                                Style="{StaticResource Muted}"
+                                FontSize="12"/>
+                    </VerticalStackLayout>
+                    <Label Grid.Column="1"
+                            Text="✕"
+                            FontSize="14"
+                            TextColor="{StaticResource TextMuted}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CancelCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
 
-        <Entry
-            Placeholder="Kullanıcı adı"
-            Text="{Binding Username}" />
+                <BoxView HeightRequest="1"
+                        Color="{StaticResource StrokeSoft}"/>
 
-        <Entry
-            Placeholder="Şifre"
-            Text="{Binding Password}"
-            IsPassword="True" />
+                <VerticalStackLayout Padding="28,24"
+                        Spacing="14">
 
-        <Entry
-            Placeholder="Notlar"
-            Text="{Binding Notes}" />
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Başlık"
+                                Style="{StaticResource FieldLabel}"/>
+                        <Border Style="{StaticResource FieldBorder}"
+                                HeightRequest="40">
+                            <Entry Placeholder="Örn. Bilgisayar Şifresi"
+                                    FontSize="13"
+                                   Text="{Binding Title}"/>
+                        </Border>
+                    </VerticalStackLayout>
 
-        <Button
-            Text="Kaydet"
-            Command="{Binding SaveCommand}" />
+                    <Grid ColumnDefinitions="*,*"
+                            ColumnSpacing="14">
+                        <VerticalStackLayout Grid.Column="0"
+                                Spacing="6">
+                            <Label Text="Kullanıcı adı"
+                                    Style="{StaticResource FieldLabel}"/>
+                            <Border Style="{StaticResource FieldBorder}"
+                                    HeightRequest="40">
+                                <Entry Placeholder="kullanici"
+                                        FontSize="13"
+                                       Text="{Binding Username}"/>
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1"
+                                Spacing="6">
+                            <Label Text="Kategori"
+                                    Style="{StaticResource FieldLabel}"/>
+                            <Border Style="{StaticResource FieldBorder}"
+                                    HeightRequest="40">
+                                <Picker  FontSize="13"
+                                         TextColor="{StaticResource TextPrimary}"
+                                         TitleColor="{StaticResource TextFaint}"
+                                         BackgroundColor="Transparent"
+                                         SelectedItem="{Binding Category}">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Kişisel</x:String>
+                                            <x:String>İş</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
 
-        <Label
-            Text="{Binding ErrorMessage}"
-            TextColor="Red" />
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Şifre"
+                                Style="{StaticResource FieldLabel}"/>
+                        <Grid ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10">
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource FieldBorder}"
+                                    HeightRequest="40">
+                                <Entry Placeholder="••••••••••"
+                                       Style="{StaticResource MonoEntry}"
+                                        FontSize="13"
+                                        IsPassword="True"
+                                       Text="{Binding Password}"/>
+                            </Border>
+                            <Button Grid.Column="1"
+                                    Text="Üret"
+                                    Style="{StaticResource GhostButton}"
+                                    TextColor="{StaticResource Accent}"
+                                    HeightRequest="40"
+                                    FontSize="12"
+                                    Command="{Binding GeneratePasswordCommand}"/>
+                        </Grid>
+                    </VerticalStackLayout>
 
-    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Notlar"
+                                Style="{StaticResource FieldLabel}"/>
+                        <Border Style="{StaticResource FieldBorder}"
+                                HeightRequest="76"
+                                Padding="12,4">
+                            <Editor Placeholder="İsteğe bağlı"
+                                    FontSize="13"
+                                    AutoSize="Disabled"
+                                    Text="{Binding Notes}"/>
+                        </Border>
+                    </VerticalStackLayout>
 
+                    <Label Text="{Binding ErrorMessage}"
+                            TextColor="{StaticResource Danger}"
+                            FontSize="13"/>
+                </VerticalStackLayout>
+
+                <BoxView HeightRequest="1"
+                        Color="{StaticResource StrokeSoft}"/>
+                <Grid BackgroundColor="#141118"
+                        Padding="28,16"
+                        ColumnDefinitions="*,Auto,Auto"
+                        ColumnSpacing="10">
+                    <Button Grid.Column="1"
+                            Text="İptal"
+                            Style="{StaticResource GhostButton}"
+                            HeightRequest="40"
+                            Command="{Binding CancelCommand}"/>
+                    <Button Grid.Column="2"
+                            Text="Kaydet"
+                            Style="{StaticResource PrimaryButton}"
+                            HeightRequest="40"
+                            Command="{Binding SaveCommand}"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
 </ContentPage>
