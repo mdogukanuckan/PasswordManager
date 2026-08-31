@@ -10,5 +10,6 @@ public partial class AppShell : Shell
 		InitializeComponent();
 		Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 		Routing.RegisterRoute(nameof(AddVaultItemPage), typeof(AddVaultItemPage));
+		Routing.RegisterRoute(nameof(VaultItemDetailPage), typeof(VaultItemDetailPage));
 	}
 }

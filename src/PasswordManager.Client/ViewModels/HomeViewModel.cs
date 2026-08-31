@@ -15,6 +15,8 @@ public partial class HomeViewModel : ObservableObject
 
     [ObservableProperty]
     public partial ObservableCollection<VaultItemListEntry> VaultItems { get; set; } = new();
+    [ObservableProperty] 
+    public partial VaultItemListEntry? SelectedEntry { get; set; }
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -68,5 +70,19 @@ public partial class HomeViewModel : ObservableObject
     private async Task GoToAddItemAsync()
     {
         await Shell.Current.GoToAsync(nameof(AddVaultItemPage));
+    }
+   partial void OnSelectedEntryChanged(VaultItemListEntry? value)
+    {
+        if(value is null)
+        {
+            return;
+        }
+        _ = NavigateToDetailAsync(value);
+    }
+
+    private async Task NavigateToDetailAsync(VaultItemListEntry entry)
+    {
+        await Shell.Current.GoToAsync(nameof(VaultItemDetailPage), new Dictionary<string, object> { { "Item", entry } });
+        SelectedEntry = null;
     }
 }

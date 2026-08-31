@@ -36,6 +36,8 @@ public static class MauiProgram
 		builder.Services.AddTransient<RegisterPage>();
 		builder.Services.AddTransient<AddVaultItemViewModel>();
 		builder.Services.AddTransient<AddVaultItemPage>();
+		builder.Services.AddTransient<VaultItemDetailViewModel>();
+		builder.Services.AddTransient<VaultItemDetailPage>();
 
 		builder.Services.AddSingleton<ITokenStorageService, TokenStorageService>();
 		builder.Services.AddSingleton<IKeyDerivationService, KeyDerivationService>();

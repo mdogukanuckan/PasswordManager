@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PasswordManager.Client.Views.VaultItemDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Vault Item Detay">
+    <VerticalStackLayout Padding="30" Spacing="15">
+        <Entry
+            Placeholder="Başlık"
+            Text="{Binding Title}" 
+            IsReadOnly="True"/>
+        <Entry
+            Placeholder="Kullanıcı Adı"
+            Text="{Binding Username}"
+            IsReadOnly="True" />
+        <Entry
+            Placeholder="Şifre"
+            Text="{Binding Password}"
+            IsReadOnly="True"
+            IsPassword="{Binding IsPasswordMasked}" />
+            
+        <Entry
+            Placeholder="Notlar"
+            Text="{Binding Notes}"
+            IsReadOnly="True" />
+        <Button 
+            Text ="Şifreyi Göster/Gizle"
+            Command ="{Binding ToggleMaskCommand}"/>
+    </VerticalStackLayout>
+
+
+</ContentPage>

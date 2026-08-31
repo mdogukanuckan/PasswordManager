@@ -9,7 +9,7 @@
         <Label Text="{Binding ErrorMessage}"
                TextColor="Red"/>
 
-        <CollectionView ItemsSource="{Binding VaultItems}">
+        <CollectionView ItemsSource="{Binding VaultItems}" SelectionMode="Single" SelectedItem ="{Binding SelectedEntry}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <VerticalStackLayout Padding="10"
