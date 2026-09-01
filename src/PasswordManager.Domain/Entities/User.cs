@@ -16,4 +16,5 @@ public class User : BaseEntity
 
     public ICollection<VaultItem> VaultItems { get; set; } = new List<VaultItem>();
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<Category> Categories { get; set; } = new List<Category>();
 }

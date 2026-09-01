@@ -45,15 +45,18 @@ public partial class HomeViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
+    private readonly IServiceProvider _serviceProvider;
 
     public HomeViewModel(
         IVaultItemApiService vaultItemApiService,
         IVaultItemMapper vaultItemMapper,
-        IVaultSessionService vaultSessionService)
+        IVaultSessionService vaultSessionService,
+        IServiceProvider serviceProvider)
     {
         _vaultItemApiService = vaultItemApiService;
         _vaultItemMapper = vaultItemMapper;
         _vaultSessionService = vaultSessionService;
+        _serviceProvider = serviceProvider;
     }
 
     [RelayCommand]
@@ -168,5 +171,10 @@ public partial class HomeViewModel : ObservableObject
         }
 
         FilteredItems = new ObservableCollection<VaultItemListEntry>(query);
+    }
+    [RelayCommand]
+    private async Task GoToManageCategoriesAsync()
+    {
+        await Shell.Current.GoToAsync(nameof(ManageCategoriesPage));
     }
 }

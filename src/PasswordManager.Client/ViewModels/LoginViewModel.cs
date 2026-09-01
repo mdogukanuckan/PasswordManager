@@ -58,6 +58,7 @@ public partial class LoginViewModel : ObservableObject
                 Password, salt.EncryptionSalt, salt.KdfIterations, salt.KdfMemorySize, salt.KdfParallelism);
             var authKey = Convert.ToBase64String(authKeyBytes);
             var response = await _authApiService.LoginAsync(new LoginRequest(Email, authKey));
+            await Clipboard.SetTextAsync(response.AccessToken);
             var vaultKey = _vaultCryptoService.UnwrapKey(response.WrappedVaultKey, response.WrappedVaultKeyNonce, _encryptionKey);
             _vaultSessionService.SetVaultKey(vaultKey);
             _vaultSessionService.SetUserEmail(Email);

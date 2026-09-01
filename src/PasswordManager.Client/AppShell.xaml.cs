@@ -11,5 +11,6 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 		Routing.RegisterRoute(nameof(AddVaultItemPage), typeof(AddVaultItemPage));
 		Routing.RegisterRoute(nameof(VaultItemDetailPage), typeof(VaultItemDetailPage));
+		Routing.RegisterRoute(nameof(ManageCategoriesPage), typeof(ManageCategoriesPage));
 	}
 }

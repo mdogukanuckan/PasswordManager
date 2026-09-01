@@ -4,6 +4,7 @@ using PasswordManager.Client.Services.Vault;
 using PasswordManager.Client.Services.Http;
 using PasswordManager.Client.ViewModels;
 using PasswordManager.Client.Views;
+using PasswordManager.Client.Services.Category;
 
 namespace PasswordManager.Client;
 
@@ -38,6 +39,11 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 	{
 		client.BaseAddress = GetApiBaseAddress();
 	});
+		builder.Services.AddHttpClient<ICategoryApiService, CategoryApiService>(client =>
+	{
+		client.BaseAddress = GetApiBaseAddress();
+	})
+	.AddHttpMessageHandler<AuthHeaderHandler>();
 		builder.Services.AddTransient<LoginViewModel>();
 		builder.Services.AddTransient<LoginPage>();
 		builder.Services.AddTransient<HomeViewModel>();
@@ -48,12 +54,16 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 		builder.Services.AddTransient<AddVaultItemPage>();
 		builder.Services.AddTransient<VaultItemDetailViewModel>();
 		builder.Services.AddTransient<VaultItemDetailPage>();
+		builder.Services.AddTransient<CategoryPickerViewModel>();
+		builder.Services.AddTransient<ManageCategoriesViewModel>();
+		builder.Services.AddTransient<ManageCategoriesPage>();
 
 		builder.Services.AddSingleton<ITokenStorageService, TokenStorageService>();
 		builder.Services.AddSingleton<IKeyDerivationService, KeyDerivationService>();
 		builder.Services.AddSingleton<IVaultCryptoService, VaultCryptoService>();
 		builder.Services.AddSingleton<IVaultSessionService, VaultSessionService>();
 		builder.Services.AddSingleton<IVaultItemMapper, VaultItemMapper>();
+		builder.Services.AddSingleton<ICategoryMapper, CategoryMapper>();
 
 		builder.Services.AddTransient<AuthHeaderHandler>();
 

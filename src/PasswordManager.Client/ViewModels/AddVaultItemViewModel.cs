@@ -8,13 +8,14 @@ namespace PasswordManager.Client.ViewModels;
 
 public partial class AddVaultItemViewModel : ObservableObject
 {
-    private const string DefaultCategory = "Kişisel";
+
     private const int GeneratedPasswordLength = 16;
     private const string PasswordCharset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_=+";
 
     private readonly IVaultItemMapper _vaultItemMapper;
     private readonly IVaultItemApiService _vaultItemApiService;
     private readonly IVaultSessionService _vaultSessionService;
+
 
     [ObservableProperty]
     public partial string Title { get; set; } = string.Empty;
@@ -24,24 +25,25 @@ public partial class AddVaultItemViewModel : ObservableObject
     public partial string Password { get; set; } = string.Empty;
     [ObservableProperty]
     public partial string Notes { get; set; } = string.Empty;
-    [ObservableProperty]
-    public partial string Category { get; set; } = DefaultCategory;
+
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
+    public CategoryPickerViewModel CategoryPicker { get; }
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
 
     public AddVaultItemViewModel(
-        IVaultItemMapper vaultItemMapper,
-        IVaultItemApiService vaultItemApiService,
-        IVaultSessionService vaultSessionService
-    )
+    IVaultItemMapper vaultItemMapper,
+    IVaultItemApiService vaultItemApiService,
+    IVaultSessionService vaultSessionService,
+    CategoryPickerViewModel categoryPicker
+)
     {
-
         _vaultItemMapper = vaultItemMapper;
         _vaultItemApiService = vaultItemApiService;
         _vaultSessionService = vaultSessionService;
+        CategoryPicker = categoryPicker;
     }
 
     [RelayCommand]
@@ -69,7 +71,7 @@ public partial class AddVaultItemViewModel : ObservableObject
                 Username,
                 Password,
                 Notes,
-                string.IsNullOrWhiteSpace(Category) ? DefaultCategory : Category);
+                string.IsNullOrWhiteSpace(CategoryPicker.SelectedCategory) ? CategoryPickerViewModel.DefaultCategory : CategoryPicker.SelectedCategory);
 
             var request = _vaultItemMapper.ToCreateRequest(
                 payload,

@@ -10,7 +10,7 @@
 
         <!-- 1) Sol kategori paneli -->
         <Grid Grid.Column="0" BackgroundColor="{StaticResource BgPanel}"
-              Padding="12,20" RowDefinitions="Auto,*,Auto">
+              Padding="12,20" RowDefinitions="Auto,*,Auto,Auto">
 
             <Label Grid.Row="0" Text="KASA" Style="{StaticResource Caps}" Margin="10,4,10,14" />
 
@@ -30,7 +30,17 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="10" Padding="10,14,10,0">
+            <Label Grid.Row="2"
+                   Text="Kategorileri Yönet"
+                   FontSize="12"
+                   TextColor="{StaticResource TextFaint}"
+                   Margin="10,8,10,0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToManageCategoriesCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Grid Grid.Row="3" ColumnDefinitions="Auto,*" ColumnSpacing="10" Padding="10,14,10,0">
                 <Border Grid.Column="0" Style="{StaticResource Avatar}" WidthRequest="26" HeightRequest="26">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="13" />
