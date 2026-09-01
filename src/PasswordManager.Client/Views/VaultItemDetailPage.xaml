@@ -17,90 +17,135 @@
 
             <VerticalStackLayout>
 
-                <Grid ColumnDefinitions="*,Auto" Padding="28,24,28,20">
-                    <VerticalStackLayout Grid.Column="0" Spacing="5">
-                        <Label Text="Kaydı Düzenle" FontSize="19" FontAttributes="Bold"
-                               TextColor="{StaticResource TextPrimary}" />
-                        <Label Text="Kayıt bilgilerini güncelleyin." Style="{StaticResource Muted}" FontSize="12" />
+                <Grid ColumnDefinitions="*,Auto"
+                        Padding="28,24,28,20">
+                    <VerticalStackLayout Grid.Column="0"
+                            Spacing="5">
+                        <Label Text="Kaydı Düzenle"
+                                FontSize="19"
+                                FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Kayıt bilgilerini güncelleyin."
+                                Style="{StaticResource Muted}"
+                                FontSize="12"/>
                     </VerticalStackLayout>
-                    <Label Grid.Column="1" Text="✕" FontSize="14" TextColor="{StaticResource TextMuted}">
+                    <Label Grid.Column="1"
+                            Text="✕"
+                            FontSize="14"
+                            TextColor="{StaticResource TextMuted}">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding CancelCommand}" />
+                            <TapGestureRecognizer Command="{Binding CancelCommand}"/>
                         </Label.GestureRecognizers>
                     </Label>
                 </Grid>
 
-                <BoxView HeightRequest="1" Color="{StaticResource StrokeSoft}" />
+                <BoxView HeightRequest="1"
+                        Color="{StaticResource StrokeSoft}"/>
 
                 <ScrollView MaximumHeightRequest="500">
-                    <VerticalStackLayout Padding="28,24" Spacing="14">
+                    <VerticalStackLayout Padding="28,24"
+                            Spacing="14">
 
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Başlık" Style="{StaticResource FieldLabel}" />
-                            <Border Style="{StaticResource FieldBorder}" HeightRequest="40">
-                                <Entry Text="{Binding Title}" FontSize="13" />
+                            <Label Text="Başlık"
+                                    Style="{StaticResource FieldLabel}"/>
+                            <Border Style="{StaticResource FieldBorder}"
+                                    HeightRequest="40">
+                                <Entry Text="{Binding Title}"
+                                        FontSize="13"/>
                             </Border>
                         </VerticalStackLayout>
 
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
-                            <VerticalStackLayout Grid.Column="0" Spacing="6">
-                                <Label Text="Kullanıcı adı" Style="{StaticResource FieldLabel}" />
-                                <Border Style="{StaticResource FieldBorder}" HeightRequest="40">
-                                    <Entry Text="{Binding Username}" Style="{StaticResource MonoEntry}" FontSize="13" />
+                        <Grid ColumnDefinitions="*,*"
+                                ColumnSpacing="14">
+                            <VerticalStackLayout Grid.Column="0"
+                                    Spacing="6">
+                                <Label Text="Kullanıcı adı"
+                                        Style="{StaticResource FieldLabel}"/>
+                                <Border Style="{StaticResource FieldBorder}"
+                                        HeightRequest="40">
+                                    <Entry Text="{Binding Username}"
+                                            Style="{StaticResource MonoEntry}"
+                                            FontSize="13"/>
                                 </Border>
                             </VerticalStackLayout>
-                            <VerticalStackLayout Grid.Column="1" Spacing="6">
-                                <Label Text="Kategori" Style="{StaticResource FieldLabel}" />
-                                <Border Style="{StaticResource FieldBorder}" HeightRequest="40">
+                            <VerticalStackLayout Grid.Column="1"
+                                    Spacing="6">
+                                <Label Text="Kategori"
+                                        Style="{StaticResource FieldLabel}"/>
+                                <Border Style="{StaticResource FieldBorder}"
+                                        HeightRequest="40">
                                     <Picker FontSize="13"
                                             TextColor="{StaticResource TextPrimary}"
                                             BackgroundColor="Transparent"
-                                            SelectedItem="{Binding Category}">
-                                        <Picker.ItemsSource>
-                                            <x:Array Type="{x:Type x:String}">
-                                                <x:String>Kişisel</x:String>
-                                                <x:String>İş</x:String>
-                                            </x:Array>
-                                        </Picker.ItemsSource>
+                                            SelectedItem="{Binding CategoryPicker.SelectedCategory}"
+                                            ItemsSource="{Binding CategoryPicker.AvailableCategories}">
                                     </Picker>
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>
 
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Şifre" Style="{StaticResource FieldLabel}" />
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                                <Border Grid.Column="0" Style="{StaticResource FieldBorder}" HeightRequest="40">
+                            <Label Text="Şifre"
+                                    Style="{StaticResource FieldLabel}"/>
+                            <Grid ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="10">
+                                <Border Grid.Column="0"
+                                        Style="{StaticResource FieldBorder}"
+                                        HeightRequest="40">
                                     <Entry Text="{Binding Password}"
                                            IsPassword="{Binding IsPasswordMasked}"
-                                           Style="{StaticResource MonoEntry}" FontSize="13" />
+                                           Style="{StaticResource MonoEntry}"
+                                            FontSize="13"/>
                                 </Border>
                                 <Button Grid.Column="1"
                                         Text="{Binding IsPasswordMasked, Converter={StaticResource MaskToLabelConverter}}"
-                                        Style="{StaticResource GhostButton}" TextColor="{StaticResource Accent}"
-                                        HeightRequest="40" FontSize="12" Command="{Binding ToggleMaskCommand}" />
+                                        Style="{StaticResource GhostButton}"
+                                        TextColor="{StaticResource Accent}"
+                                        HeightRequest="40"
+                                        FontSize="12"
+                                        Command="{Binding ToggleMaskCommand}"/>
                             </Grid>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Notlar" Style="{StaticResource FieldLabel}" />
-                            <Border Style="{StaticResource FieldBorder}" HeightRequest="76" Padding="12,4">
-                                <Editor Text="{Binding Notes}" FontSize="13" AutoSize="Disabled" />
+                            <Label Text="Notlar"
+                                    Style="{StaticResource FieldLabel}"/>
+                            <Border Style="{StaticResource FieldBorder}"
+                                    HeightRequest="76"
+                                    Padding="12,4">
+                                <Editor Text="{Binding Notes}"
+                                        FontSize="13"
+                                        AutoSize="Disabled"/>
                             </Border>
                         </VerticalStackLayout>
 
-                        <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13" />
+                        <Label Text="{Binding ErrorMessage}"
+                                TextColor="{StaticResource Danger}"
+                                FontSize="13"/>
                     </VerticalStackLayout>
                 </ScrollView>
 
-                <BoxView HeightRequest="1" Color="{StaticResource StrokeSoft}" />
-                <Grid BackgroundColor="#141118" Padding="28,16" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
-                    <Button Grid.Column="0" Text="Sil" Style="{StaticResource DangerButton}"
-                            Command="{Binding DeleteCommand}" />
-                    <Button Grid.Column="2" Text="Vazgeç" Style="{StaticResource GhostButton}"
-                            HeightRequest="40" Command="{Binding CancelCommand}" />
-                    <Button Grid.Column="3" Text="Kaydet" Style="{StaticResource PrimaryButton}"
-                            HeightRequest="40" Command="{Binding SaveCommand}" />
+                <BoxView HeightRequest="1"
+                        Color="{StaticResource StrokeSoft}"/>
+                <Grid BackgroundColor="#141118"
+                        Padding="28,16"
+                        ColumnDefinitions="Auto,*,Auto,Auto"
+                        ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="Sil"
+                            Style="{StaticResource DangerButton}"
+                            Command="{Binding DeleteCommand}"/>
+                    <Button Grid.Column="2"
+                            Text="Vazgeç"
+                            Style="{StaticResource GhostButton}"
+                            HeightRequest="40"
+                            Command="{Binding CancelCommand}"/>
+                    <Button Grid.Column="3"
+                            Text="Kaydet"
+                            Style="{StaticResource PrimaryButton}"
+                            HeightRequest="40"
+                            Command="{Binding SaveCommand}"/>
                 </Grid>
             </VerticalStackLayout>
         </Border>

@@ -45,18 +45,18 @@ public partial class HomeViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
-    private readonly IServiceProvider _serviceProvider;
+    public CategoryPickerViewModel CategoryPicker { get; }
 
     public HomeViewModel(
-        IVaultItemApiService vaultItemApiService,
-        IVaultItemMapper vaultItemMapper,
-        IVaultSessionService vaultSessionService,
-        IServiceProvider serviceProvider)
+    IVaultItemApiService vaultItemApiService,
+    IVaultItemMapper vaultItemMapper,
+    IVaultSessionService vaultSessionService,
+    CategoryPickerViewModel categoryPicker)
     {
         _vaultItemApiService = vaultItemApiService;
         _vaultItemMapper = vaultItemMapper;
         _vaultSessionService = vaultSessionService;
-        _serviceProvider = serviceProvider;
+        CategoryPicker = categoryPicker;
     }
 
     [RelayCommand]
@@ -76,16 +76,19 @@ public partial class HomeViewModel : ObservableObject
         {
             var responses = await _vaultItemApiService.GetAllAsync();
             VaultItems.Clear();
-
             foreach (var response in responses)
             {
                 var payload = _vaultItemMapper.ToPayload(response, _vaultSessionService.VaultKey);
                 VaultItems.Add(new VaultItemListEntry(response.Id, payload, response.CreatedAt, response.ModifiedAt));
             }
 
+            await CategoryPicker.LoadCategoriesCommand.ExecuteAsync(null);
+
             RecomputeCategories();
             SelectedCategory = Categories.FirstOrDefault();
             RefreshFilteredItems();
+
+
         }
         catch (Services.Exceptions.ApiException ex)
         {
@@ -143,16 +146,27 @@ public partial class HomeViewModel : ObservableObject
     }
 
     private void RecomputeCategories()
+{
+    var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var name in CategoryPicker.AvailableCategories)
     {
-        var groups = VaultItems
-            .GroupBy(i => string.IsNullOrWhiteSpace(i.Payload.Category) ? "Diğer" : i.Payload.Category)
-            .OrderBy(g => g.Key);
-
-        var categories = new List<VaultCategory> { new("Tümü", VaultItems.Count) };
-        categories.AddRange(groups.Select(g => new VaultCategory(g.Key, g.Count())));
-
-        Categories = new ObservableCollection<VaultCategory>(categories);
+        counts[name] = 0;
     }
+
+    foreach (var item in VaultItems)
+    {
+        var name = string.IsNullOrWhiteSpace(item.Payload.Category) ? "Diğer" : item.Payload.Category;
+        counts[name] = counts.TryGetValue(name, out var existing) ? existing + 1 : 1;
+    }
+
+    var categories = new List<VaultCategory> { new("Tümü", VaultItems.Count) };
+    categories.AddRange(counts
+        .OrderBy(kv => kv.Key)
+        .Select(kv => new VaultCategory(kv.Key, kv.Value)));
+
+    Categories = new ObservableCollection<VaultCategory>(categories);
+}
 
     private void RefreshFilteredItems()
     {

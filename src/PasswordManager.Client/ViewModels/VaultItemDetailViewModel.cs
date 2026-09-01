@@ -21,8 +21,7 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
     public partial bool IsPasswordMasked { get; set; } = true;
     [ObservableProperty]
     public partial Guid Id { get; set; }
-    [ObservableProperty]
-    public partial string Category { get; set; } = string.Empty;
+
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
     [ObservableProperty]
@@ -31,15 +30,20 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
     private readonly IVaultItemMapper _vaultItemMapper;
     private readonly IVaultItemApiService _vaultItemApiService;
     private readonly IVaultSessionService _vaultSessionService;
+    public CategoryPickerViewModel CategoryPicker { get; }
+
+    private string _pendingCategory = CategoryPickerViewModel.DefaultCategory;
 
     public VaultItemDetailViewModel(
         IVaultItemMapper vaultItemMapper,
         IVaultItemApiService vaultItemApiService,
-        IVaultSessionService vaultSessionService)
+        IVaultSessionService vaultSessionService,
+        CategoryPickerViewModel categoryPicker)
     {
         _vaultItemMapper = vaultItemMapper;
         _vaultItemApiService = vaultItemApiService;
         _vaultSessionService = vaultSessionService;
+        CategoryPicker = categoryPicker;
     }
 
 
@@ -59,7 +63,9 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
             Username = entry.Payload.Username;
             Password = entry.Payload.Password;
             Notes = entry.Payload.Notes;
-            Category = entry.Payload.Category;
+            _pendingCategory = string.IsNullOrWhiteSpace(entry.Payload.Category)
+                                ? CategoryPickerViewModel.DefaultCategory
+                                : entry.Payload.Category;
         }
     }
     [RelayCommand]
@@ -84,11 +90,11 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
             }
 
             var payload = new VaultItemPayload(
-                Title,
-                Username,
-                Password,
-                Notes,
-                string.IsNullOrWhiteSpace(Category) ? "Kişisel" : Category);
+    Title,
+    Username,
+    Password,
+    Notes,
+    string.IsNullOrWhiteSpace(CategoryPicker.SelectedCategory) ? CategoryPickerViewModel.DefaultCategory : CategoryPicker.SelectedCategory);
 
             var request = _vaultItemMapper.ToUpdateRequest(payload, vaultKey);
 
@@ -141,5 +147,11 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
         {
             IsBusy = false;
         }
+    }
+
+    public async Task InitializeCategoryAsync()
+    {
+        await CategoryPicker.LoadCategoriesCommand.ExecuteAsync(null);
+        CategoryPicker.SelectedCategory = _pendingCategory;
     }
 }
