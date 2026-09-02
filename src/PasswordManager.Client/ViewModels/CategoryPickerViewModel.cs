@@ -80,30 +80,78 @@ public partial class CategoryPickerViewModel : ObservableObject
         }
     }
 
-   [RelayCommand]
-private async Task DeleteCategoryAsync(string? categoryName)
+    [RelayCommand]
+    private async Task DeleteCategoryAsync(string? categoryName)
+    {
+        var target = categoryName ?? SelectedCategory;
+        if (string.IsNullOrWhiteSpace(target)) return;
+        if (!_categoryIdsByName.TryGetValue(target, out var categoryId)) return;
+
+        bool confirmed = await Shell.Current.CurrentPage.DisplayAlert(
+            "Kategoriyi Sil",
+            $"\"{target}\" kategorisini silmek istediğinize emin misiniz?",
+            "Sil", "Vazgeç");
+
+        if (!confirmed) return;
+
+        try
+        {
+            await _categoryApiService.DeleteAsync(categoryId);
+            AvailableCategories.Remove(target);
+            _categoryIdsByName.Remove(target);
+
+            if (SelectedCategory == target)
+            {
+                SelectedCategory = AvailableCategories.FirstOrDefault() ?? DefaultCategory;
+            }
+        }
+        catch (ApiException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+    [RelayCommand]
+private async Task RenameCategoryAsync(string? categoryName)
 {
     var target = categoryName ?? SelectedCategory;
-    if (string.IsNullOrWhiteSpace(target)) return;
-    if (!_categoryIdsByName.TryGetValue(target, out var categoryId)) return;
 
-    bool confirmed = await Shell.Current.CurrentPage.DisplayAlert(
-        "Kategoriyi Sil",
-        $"\"{target}\" kategorisini silmek istediğinize emin misiniz?",
-        "Sil", "Vazgeç");
+    if (string.IsNullOrWhiteSpace(target))
+        return;
 
-    if (!confirmed) return;
+    if (!_categoryIdsByName.TryGetValue(target, out var id))
+        return;
+
+    var newName = await Shell.Current.DisplayPromptAsync(
+        "Kategoriyi Yeniden Adlandır",
+        "Yeni adı girin:",
+        "Kaydet",
+        "Vazgeç",
+        initialValue: target);
+
+    if (string.IsNullOrWhiteSpace(newName) || newName == target)
+        return;
+
+    var vaultKey =  _vaultSessionService.VaultKey;
+
+    if (vaultKey is null)
+        return;
 
     try
     {
-        await _categoryApiService.DeleteAsync(categoryId);
-        AvailableCategories.Remove(target);
+        var request = _categoryMapper.ToUpdateRequest(newName, vaultKey);
+
+        await _categoryApiService.UpdateAsync(id, request);
+
         _categoryIdsByName.Remove(target);
+        _categoryIdsByName[newName] = id;
+
+        var index = AvailableCategories.IndexOf(target);
+
+        if (index >= 0)
+            AvailableCategories[index] = newName;
 
         if (SelectedCategory == target)
-        {
-            SelectedCategory = AvailableCategories.FirstOrDefault() ?? DefaultCategory;
-        }
+            SelectedCategory = newName;
     }
     catch (ApiException ex)
     {

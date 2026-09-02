@@ -30,6 +30,13 @@ public class CategoryController : ControllerBase
         var result = await _categoryService.CreateAsync(userId, request);
         return Ok(result);
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id,UpdateCategoryRequest request)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await _categoryService.UpdateAsync(id,userId,request);
+        return Ok(result);
+    }
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {

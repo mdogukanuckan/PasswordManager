@@ -25,4 +25,11 @@ public class CategoryMapper : ICategoryMapper
         byte[] plaintextBytes = _vaultCryptoService.Decrypt(response.EncryptedName, response.Nonce, vaultKey);
         return Encoding.UTF8.GetString(plaintextBytes);
     }
+
+    public UpdateCategoryRequest ToUpdateRequest(string name, byte[] vaultKey)
+    {
+        byte[] plaintextBytes = Encoding.UTF8.GetBytes(name);
+        var encrypted = _vaultCryptoService.Encrypt(plaintextBytes, vaultKey);
+        return new UpdateCategoryRequest(encrypted.CipherTextBase64, encrypted.NonceBase64);
+    }
 }

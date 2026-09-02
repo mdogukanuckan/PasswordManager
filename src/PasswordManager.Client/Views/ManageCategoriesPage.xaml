@@ -53,11 +53,19 @@
                     <CollectionView ItemsSource="{Binding CategoryPicker.AvailableCategories}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="x:String">
-                                <Grid ColumnDefinitions="*,Auto"
+                                <Grid ColumnDefinitions="*,Auto,Auto"
                                       Padding="0,8">
+
                                     <Label Text="{Binding .}"
                                            VerticalOptions="Center"/>
+
                                     <Button Grid.Column="1"
+                                            Text="Düzenle"
+                                            Style="{StaticResource GhostButton}"
+                                            Command="{Binding BindingContext.CategoryPicker.RenameCategoryCommand, Source={x:Reference Root}}"
+                                            CommandParameter="{Binding .}"/>
+
+                                    <Button Grid.Column="2"
                                             Text="Sil"
                                             Style="{StaticResource GhostButton}"
                                             Command="{Binding BindingContext.CategoryPicker.DeleteCategoryCommand, Source={x:Reference Root}}"

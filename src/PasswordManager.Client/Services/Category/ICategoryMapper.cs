@@ -6,4 +6,5 @@ public interface ICategoryMapper
 {
     CreateCategoryRequest ToCreateRequest(string name, byte[] vaultKey);
     string ToPlainTextName(CategoryResponse response, byte[] vaultKey);
+    UpdateCategoryRequest ToUpdateRequest(string name, byte[] vaultKey);
 }

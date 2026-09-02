@@ -66,5 +66,10 @@ public class CategoryApiService : ICategoryApiService
         throw new ApiException((int)response.StatusCode, message);
     }
 
+    public async Task<CategoryResponse> UpdateAsync(Guid id, UpdateCategoryRequest request)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"api/Category/{id}", request, ClientJsonOptions.Options);
+        return await HandleResponseAsync<CategoryResponse>(response);
 
+    }
 }
