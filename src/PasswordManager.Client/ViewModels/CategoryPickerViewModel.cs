@@ -87,7 +87,7 @@ public partial class CategoryPickerViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(target)) return;
         if (!_categoryIdsByName.TryGetValue(target, out var categoryId)) return;
 
-        bool confirmed = await Shell.Current.CurrentPage.DisplayAlert(
+        bool confirmed = await Shell.Current.CurrentPage.DisplayAlertAsync(
             "Kategoriyi Sil",
             $"\"{target}\" kategorisini silmek istediğinize emin misiniz?",
             "Sil", "Vazgeç");

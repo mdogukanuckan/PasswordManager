@@ -126,7 +126,7 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
     [RelayCommand]
     private async Task DeleteAsync()
     {
-        bool confirmed = await Shell.Current.CurrentPage.DisplayAlert(
+        bool confirmed = await Shell.Current.CurrentPage.DisplayAlertAsync(
             "Kaydı Sil",
             "Bu kaydı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
             "Sil",

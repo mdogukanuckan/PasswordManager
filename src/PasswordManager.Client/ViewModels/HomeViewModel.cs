@@ -60,45 +60,58 @@ public partial class HomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LoadVaultItemsAsync()
+private async Task LoadVaultItemsAsync()
+{
+    if (_vaultSessionService.VaultKey is null)
     {
-        if (_vaultSessionService.VaultKey is null)
-        {
-            ErrorMessage = "Vault key bulunamadı, lütfen tekrar giriş yapın.";
-            return;
-        }
-
-        IsBusy = true;
-        ErrorMessage = null;
-        UserName = _vaultSessionService.UserEmail;
-
-        try
-        {
-            var responses = await _vaultItemApiService.GetAllAsync();
-            VaultItems.Clear();
-            foreach (var response in responses)
-            {
-                var payload = _vaultItemMapper.ToPayload(response, _vaultSessionService.VaultKey);
-                VaultItems.Add(new VaultItemListEntry(response.Id, payload, response.CreatedAt, response.ModifiedAt));
-            }
-
-            await CategoryPicker.LoadCategoriesCommand.ExecuteAsync(null);
-
-            RecomputeCategories();
-            SelectedCategory = Categories.FirstOrDefault();
-            RefreshFilteredItems();
-
-
-        }
-        catch (Services.Exceptions.ApiException ex)
-        {
-            ErrorMessage = ex.Message;
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        ErrorMessage = "Vault key bulunamadı, lütfen tekrar giriş yapın.";
+        return;
     }
+
+    IsBusy = true;
+    ErrorMessage = null;
+    UserName = _vaultSessionService.UserEmail;
+
+    try
+    {
+        var vaultItemsTask = _vaultItemApiService.GetAllAsync();
+        var categoriesTask = CategoryPicker.LoadCategoriesCommand.ExecuteAsync(null);
+
+        await Task.WhenAll(vaultItemsTask, categoriesTask);
+
+        var responses = await vaultItemsTask;
+
+        var items = new List<VaultItemListEntry>();
+
+        foreach (var response in responses)
+        {
+            var payload = _vaultItemMapper.ToPayload(
+                response,
+                _vaultSessionService.VaultKey);
+
+            items.Add(
+                new VaultItemListEntry(
+                    response.Id,
+                    payload,
+                    response.CreatedAt,
+                    response.ModifiedAt));
+        }
+
+        VaultItems = new ObservableCollection<VaultItemListEntry>(items);
+
+        RecomputeCategories();
+        SelectedCategory = Categories.FirstOrDefault();
+        RefreshFilteredItems();
+    }
+    catch (Services.Exceptions.ApiException ex)
+    {
+        ErrorMessage = ex.Message;
+    }
+    finally
+    {
+        IsBusy = false;
+    }
+}
 
     [RelayCommand]
     private async Task GoToAddItemAsync()
