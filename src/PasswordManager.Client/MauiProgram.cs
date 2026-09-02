@@ -5,6 +5,7 @@ using PasswordManager.Client.Services.Http;
 using PasswordManager.Client.ViewModels;
 using PasswordManager.Client.Views;
 using PasswordManager.Client.Services.Category;
+using PasswordManager.Client.Services.PasswordGeneration;
 
 namespace PasswordManager.Client;
 
@@ -64,6 +65,7 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 		builder.Services.AddSingleton<IVaultSessionService, VaultSessionService>();
 		builder.Services.AddSingleton<IVaultItemMapper, VaultItemMapper>();
 		builder.Services.AddSingleton<ICategoryMapper, CategoryMapper>();
+		builder.Services.AddSingleton<IPasswordGeneratorService, PasswordGeneratorService>();
 
 		builder.Services.AddTransient<AuthHeaderHandler>();
 

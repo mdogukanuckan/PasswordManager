@@ -2,7 +2,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PasswordManager.Client.Models;
 using PasswordManager.Client.Services.Exceptions;
+using PasswordManager.Client.Services.PasswordGeneration;
 using PasswordManager.Client.Services.Vault;
+
 
 namespace PasswordManager.Client.ViewModels;
 
@@ -15,6 +17,7 @@ public partial class AddVaultItemViewModel : ObservableObject
     private readonly IVaultItemMapper _vaultItemMapper;
     private readonly IVaultItemApiService _vaultItemApiService;
     private readonly IVaultSessionService _vaultSessionService;
+    private readonly IPasswordGeneratorService _passwordGeneratorService;
 
 
     [ObservableProperty]
@@ -37,13 +40,17 @@ public partial class AddVaultItemViewModel : ObservableObject
     IVaultItemMapper vaultItemMapper,
     IVaultItemApiService vaultItemApiService,
     IVaultSessionService vaultSessionService,
-    CategoryPickerViewModel categoryPicker
+    CategoryPickerViewModel categoryPicker,
+    IPasswordGeneratorService passwordGeneratorService
 )
     {
         _vaultItemMapper = vaultItemMapper;
         _vaultItemApiService = vaultItemApiService;
         _vaultSessionService = vaultSessionService;
+        _passwordGeneratorService = passwordGeneratorService;
         CategoryPicker = categoryPicker;
+        
+
     }
 
     [RelayCommand]
@@ -94,7 +101,7 @@ public partial class AddVaultItemViewModel : ObservableObject
     [RelayCommand]
     private void GeneratePassword()
     {
-        Password = GenerateSecurePassword();
+        Password = _passwordGeneratorService.Generate();
     }
 
     [RelayCommand]
@@ -103,14 +110,5 @@ public partial class AddVaultItemViewModel : ObservableObject
         await Shell.Current.GoToAsync("..");
     }
 
-    private static string GenerateSecurePassword()
-    {
-        var bytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(GeneratedPasswordLength);
-        var chars = new char[GeneratedPasswordLength];
-        for (int i = 0; i < GeneratedPasswordLength; i++)
-        {
-            chars[i] = PasswordCharset[bytes[i] % PasswordCharset.Length];
-        }
-        return new string(chars);
-    }
+    
 }

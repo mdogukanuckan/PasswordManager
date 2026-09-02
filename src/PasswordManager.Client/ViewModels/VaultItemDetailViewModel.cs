@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using PasswordManager.Client.Models;
 using PasswordManager.Client.Services.Vault;
 using PasswordManager.Client.Services.Exceptions;
+using PasswordManager.Client.Services.PasswordGeneration;
 
 namespace PasswordManager.Client.ViewModels;
 
@@ -30,6 +31,7 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
     private readonly IVaultItemMapper _vaultItemMapper;
     private readonly IVaultItemApiService _vaultItemApiService;
     private readonly IVaultSessionService _vaultSessionService;
+    private readonly IPasswordGeneratorService _passwordGeneratorService;
     public CategoryPickerViewModel CategoryPicker { get; }
 
     private string _pendingCategory = CategoryPickerViewModel.DefaultCategory;
@@ -38,11 +40,13 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
         IVaultItemMapper vaultItemMapper,
         IVaultItemApiService vaultItemApiService,
         IVaultSessionService vaultSessionService,
+        IPasswordGeneratorService passwordGeneratorService,
         CategoryPickerViewModel categoryPicker)
     {
         _vaultItemMapper = vaultItemMapper;
         _vaultItemApiService = vaultItemApiService;
         _vaultSessionService = vaultSessionService;
+        _passwordGeneratorService = passwordGeneratorService;
         CategoryPicker = categoryPicker;
     }
 
@@ -52,6 +56,8 @@ public partial class VaultItemDetailViewModel : ObservableObject, IQueryAttribut
     {
         IsPasswordMasked = !IsPasswordMasked;
     }
+    [RelayCommand] 
+    private void GeneratePassword() => Password = _passwordGeneratorService.Generate();
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

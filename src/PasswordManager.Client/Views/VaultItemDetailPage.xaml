@@ -88,7 +88,7 @@
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Şifre"
                                     Style="{StaticResource FieldLabel}"/>
-                            <Grid ColumnDefinitions="*,Auto"
+                            <Grid ColumnDefinitions="*,Auto,Auto"
                                     ColumnSpacing="10">
                                 <Border Grid.Column="0"
                                         Style="{StaticResource FieldBorder}"
@@ -97,6 +97,7 @@
                                            IsPassword="{Binding IsPasswordMasked}"
                                            Style="{StaticResource MonoEntry}"
                                             FontSize="13"/>
+                                        
                                 </Border>
                                 <Button Grid.Column="1"
                                         Text="{Binding IsPasswordMasked, Converter={StaticResource MaskToLabelConverter}}"
@@ -105,6 +106,13 @@
                                         HeightRequest="40"
                                         FontSize="12"
                                         Command="{Binding ToggleMaskCommand}"/>
+                                <Button Grid.Column="2"
+                                        Text="Üret"
+                                        Style="{StaticResource GhostButton}"
+                                        TextColor="{StaticResource Accent}"
+                                        HeightRequest="40"
+                                        FontSize="12"
+                                        Command="{Binding GeneratePasswordCommand}"/>
                             </Grid>
                         </VerticalStackLayout>
 
