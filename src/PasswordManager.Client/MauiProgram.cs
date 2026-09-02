@@ -44,7 +44,7 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 	{
 		client.BaseAddress = GetApiBaseAddress();
 	})
-	.AddHttpMessageHandler<AuthHeaderHandler>();
+	.AddHttpMessageHandler<TokenRefreshHandler>().AddHttpMessageHandler<AuthHeaderHandler>();
 		builder.Services.AddTransient<LoginViewModel>();
 		builder.Services.AddTransient<LoginPage>();
 		builder.Services.AddTransient<HomeViewModel>();
@@ -68,12 +68,12 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 		builder.Services.AddSingleton<IPasswordGeneratorService, PasswordGeneratorService>();
 
 		builder.Services.AddTransient<AuthHeaderHandler>();
-
+		builder.Services.AddTransient<TokenRefreshHandler>();
 		builder.Services.AddHttpClient<IVaultItemApiService, VaultItemApiService>(client =>
 		{
 			client.BaseAddress = GetApiBaseAddress();
 		})
-		.AddHttpMessageHandler<AuthHeaderHandler>();
+		.AddHttpMessageHandler<TokenRefreshHandler>().AddHttpMessageHandler<AuthHeaderHandler>();
 
 
 		return builder.Build();
