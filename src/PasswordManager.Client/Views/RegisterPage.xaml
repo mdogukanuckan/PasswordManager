@@ -5,8 +5,7 @@
              Shell.NavBarIsVisible="False"
              Title="Kayıt Ol">
 
-    <Grid ColumnDefinitions="520,*">
-
+<Grid ColumnDefinitions="{OnIdiom Phone='0,*', Default='520,*'}">
         <Grid Grid.Column="0"
               BackgroundColor="#17131D"
               Padding="48,56"

@@ -9,7 +9,7 @@
 
     <Grid>
         <Border Style="{StaticResource Card}"
-                WidthRequest="520"
+                WidthRequest="{OnIdiom Phone=-1, Default=520}"
                 Padding="0"
                 HorizontalOptions="Center"
                 VerticalOptions="Center">

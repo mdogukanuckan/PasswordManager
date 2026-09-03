@@ -60,58 +60,58 @@ public partial class HomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-private async Task LoadVaultItemsAsync()
-{
-    if (_vaultSessionService.VaultKey is null)
+    private async Task LoadVaultItemsAsync()
     {
-        ErrorMessage = "Vault key bulunamadı, lütfen tekrar giriş yapın.";
-        return;
-    }
-
-    IsBusy = true;
-    ErrorMessage = null;
-    UserName = _vaultSessionService.UserEmail;
-
-    try
-    {
-        var vaultItemsTask = _vaultItemApiService.GetAllAsync();
-        var categoriesTask = CategoryPicker.LoadCategoriesCommand.ExecuteAsync(null);
-
-        await Task.WhenAll(vaultItemsTask, categoriesTask);
-
-        var responses = await vaultItemsTask;
-
-        var items = new List<VaultItemListEntry>();
-
-        foreach (var response in responses)
+        if (_vaultSessionService.VaultKey is null)
         {
-            var payload = _vaultItemMapper.ToPayload(
-                response,
-                _vaultSessionService.VaultKey);
-
-            items.Add(
-                new VaultItemListEntry(
-                    response.Id,
-                    payload,
-                    response.CreatedAt,
-                    response.ModifiedAt));
+            ErrorMessage = "Vault key bulunamadı, lütfen tekrar giriş yapın.";
+            return;
         }
 
-        VaultItems = new ObservableCollection<VaultItemListEntry>(items);
+        IsBusy = true;
+        ErrorMessage = null;
+        UserName = _vaultSessionService.UserEmail;
 
-        RecomputeCategories();
-        SelectedCategory = Categories.FirstOrDefault();
-        RefreshFilteredItems();
+        try
+        {
+            var vaultItemsTask = _vaultItemApiService.GetAllAsync();
+            var categoriesTask = CategoryPicker.LoadCategoriesCommand.ExecuteAsync(null);
+
+            await Task.WhenAll(vaultItemsTask, categoriesTask);
+
+            var responses = await vaultItemsTask;
+
+            var items = new List<VaultItemListEntry>();
+
+            foreach (var response in responses)
+            {
+                var payload = _vaultItemMapper.ToPayload(
+                    response,
+                    _vaultSessionService.VaultKey);
+
+                items.Add(
+                    new VaultItemListEntry(
+                        response.Id,
+                        payload,
+                        response.CreatedAt,
+                        response.ModifiedAt));
+            }
+
+            VaultItems = new ObservableCollection<VaultItemListEntry>(items);
+
+            RecomputeCategories();
+            SelectedCategory = Categories.FirstOrDefault();
+            RefreshFilteredItems();
+        }
+        catch (Services.Exceptions.ApiException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
-    catch (Services.Exceptions.ApiException ex)
-    {
-        ErrorMessage = ex.Message;
-    }
-    finally
-    {
-        IsBusy = false;
-    }
-}
 
     [RelayCommand]
     private async Task GoToAddItemAsync()
@@ -141,6 +141,10 @@ private async Task LoadVaultItemsAsync()
     partial void OnSelectedEntryChanged(VaultItemListEntry? value)
     {
         HasSelection = value is not null;
+        if (DeviceInfo.Current.Idiom == DeviceIdiom.Phone)
+        {
+            _ = OpenDetailCommand.ExecuteAsync(value);
+        }
     }
 
     partial void OnSearchTextChanged(string? value)
@@ -159,27 +163,27 @@ private async Task LoadVaultItemsAsync()
     }
 
     private void RecomputeCategories()
-{
-    var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-    foreach (var name in CategoryPicker.AvailableCategories)
     {
-        counts[name] = 0;
+        var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var name in CategoryPicker.AvailableCategories)
+        {
+            counts[name] = 0;
+        }
+
+        foreach (var item in VaultItems)
+        {
+            var name = string.IsNullOrWhiteSpace(item.Payload.Category) ? "Diğer" : item.Payload.Category;
+            counts[name] = counts.TryGetValue(name, out var existing) ? existing + 1 : 1;
+        }
+
+        var categories = new List<VaultCategory> { new("Tümü", VaultItems.Count) };
+        categories.AddRange(counts
+            .OrderBy(kv => kv.Key)
+            .Select(kv => new VaultCategory(kv.Key, kv.Value)));
+
+        Categories = new ObservableCollection<VaultCategory>(categories);
     }
-
-    foreach (var item in VaultItems)
-    {
-        var name = string.IsNullOrWhiteSpace(item.Payload.Category) ? "Diğer" : item.Payload.Category;
-        counts[name] = counts.TryGetValue(name, out var existing) ? existing + 1 : 1;
-    }
-
-    var categories = new List<VaultCategory> { new("Tümü", VaultItems.Count) };
-    categories.AddRange(counts
-        .OrderBy(kv => kv.Key)
-        .Select(kv => new VaultCategory(kv.Key, kv.Value)));
-
-    Categories = new ObservableCollection<VaultCategory>(categories);
-}
 
     private void RefreshFilteredItems()
     {
@@ -203,5 +207,23 @@ private async Task LoadVaultItemsAsync()
     private async Task GoToManageCategoriesAsync()
     {
         await Shell.Current.GoToAsync(nameof(ManageCategoriesPage));
+    }
+
+    [RelayCommand]
+    private async Task OpenUserMenuAsync()
+    {
+        var result = await Shell.Current.CurrentPage.DisplayActionSheetAsync("Hesap", "İptal", null, "Kategorileri Yönet", "Kilitle");
+    
+        switch (result)
+    {
+        case "Kategorileri Yönet":
+            await GoToManageCategoriesAsync();
+            break;
+
+        case "Kilitle":
+            await LockAsync();
+            break;
+        
+    }
     }
 }

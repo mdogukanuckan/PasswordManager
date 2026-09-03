@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-	<!-- Bu ayar SADECE debug build'lerde (android:debuggable="true" iken) devreye girer.
-	     Release build'i hiçbir şekilde etkilemez, cleartext (şifresiz HTTP) trafiği
-	     Play Store'a gidecek bir sürümde asla açık olmaz. -->
-	<debug-overrides>
-		<domain-config cleartextTrafficPermitted="true">
-			<domain includeSubdomains="false">172.17.10.63</domain>
-		</domain-config>
-	</debug-overrides>
+	<!-- Bu domain-config SADECE bu proje şu an sadece debug build'lerde Android'e deploy edildiği için
+	     pratikte "debug-only" gibi davranıyor. Android'in şeması, debug-overrides içine domain-config
+	     nestlemeye izin vermiyor (bu, deneme sırasında "Nested domain-config not allowed in
+	     debug-overrides" hatasıyla, uygulama açılmadan çökerek keşfedildi) - o yüzden domain-config
+	     doğrudan network-security-config'in altında olmalı. Release build'e geçilirse (Play Store,
+	     gerçek backend URL'i HTTPS olacağı için), bu domain-config zaten hiç devreye girmeyecek -
+	     yine de o noktada bu satırların release manifest'inden tamamen çıkarılması düşünülebilir. -->
+	<domain-config cleartextTrafficPermitted="true">
+		<domain includeSubdomains="false">172.17.10.63</domain>
+	</domain-config>
 </network-security-config>

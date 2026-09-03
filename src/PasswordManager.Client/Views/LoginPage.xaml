@@ -5,37 +5,51 @@
              Shell.NavBarIsVisible="False"
              Title="Giriş">
 
-    <Grid ColumnDefinitions="520,*">
-
+    <Grid ColumnDefinitions="{OnIdiom Phone='0,*', Default='520,*'}">
         <!-- Sol: marka paneli -->
         <Grid Grid.Column="0"
               BackgroundColor="#17131D"
               Padding="48,56"
               RowDefinitions="Auto,*,Auto">
 
-            <HorizontalStackLayout Grid.Row="0" Spacing="12">
-                <Border WidthRequest="30" HeightRequest="30" StrokeThickness="0"
+            <HorizontalStackLayout Grid.Row="0"
+                    Spacing="12">
+                <Border WidthRequest="30"
+                        HeightRequest="30"
+                        StrokeThickness="0"
                         BackgroundColor="{StaticResource Accent}">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="9" />
+                        <RoundRectangle CornerRadius="9"/>
                     </Border.StrokeShape>
                 </Border>
-                <Label Text="PasswordManager" FontSize="15" FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
+                <Label Text="PasswordManager"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"
+                        VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
-            <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="Center">
+            <VerticalStackLayout Grid.Row="1"
+                    Spacing="18"
+                    VerticalOptions="Center">
                 <Label Text="Tüm şifreleriniz&#10;tek bir kasada."
-                       FontSize="36" FontAttributes="Bold" LineHeight="1.15"
-                       TextColor="{StaticResource TextPrimary}" />
+                       FontSize="36"
+                        FontAttributes="Bold"
+                        LineHeight="1.15"
+                       TextColor="{StaticResource TextPrimary}"/>
                 <Label Text="Uçtan uca şifrelenmiş kasa, masaüstü ve mobil arasında senkron. Ana şifrenizi yalnızca siz bilirsiniz."
-                       FontSize="14" LineHeight="1.5" MaximumWidthRequest="340"
-                       TextColor="{StaticResource TextMuted}" />
+                       FontSize="14"
+                        LineHeight="1.5"
+                        MaximumWidthRequest="340"
+                       TextColor="{StaticResource TextMuted}"/>
             </VerticalStackLayout>
 
-            <VerticalStackLayout Grid.Row="2" Spacing="10">
-                <Label Text="•  AES-256 yerel şifreleme" Style="{StaticResource Caps}" />
-                <Label Text="•  Sıfır bilgi mimarisi" Style="{StaticResource Caps}" />
+            <VerticalStackLayout Grid.Row="2"
+                    Spacing="10">
+                <Label Text="•  AES-256 yerel şifreleme"
+                        Style="{StaticResource Caps}"/>
+                <Label Text="•  Sıfır bilgi mimarisi"
+                        Style="{StaticResource Caps}"/>
             </VerticalStackLayout>
         </Grid>
 
@@ -47,46 +61,68 @@
                              VerticalOptions="Center">
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="Kasanızı açın" Style="{StaticResource H2}" FontSize="26" />
-                <Label Text="E-posta ve ana şifreniz ile devam edin." Style="{StaticResource Muted}" />
+                <Label Text="Kasanızı açın"
+                        Style="{StaticResource H2}"
+                        FontSize="26"/>
+                <Label Text="E-posta ve ana şifreniz ile devam edin."
+                        Style="{StaticResource Muted}"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="16">
 
                 <VerticalStackLayout Spacing="7">
-                    <Label Text="E-posta" Style="{StaticResource FieldLabel}" />
+                    <Label Text="E-posta"
+                            Style="{StaticResource FieldLabel}"/>
                     <Border Style="{StaticResource FieldBorder}">
-                        <Entry Placeholder="ad@ornek.com" Keyboard="Email"
-                               Text="{Binding Email}" />
+                        <Entry Placeholder="ad@ornek.com"
+                                Keyboard="Email"
+                               Text="{Binding Email}"/>
                     </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="7">
-                    <Label Text="Ana Şifre" Style="{StaticResource FieldLabel}" />
+                    <Label Text="Ana Şifre"
+                            Style="{StaticResource FieldLabel}"/>
                     <Border Style="{StaticResource FieldBorder}">
-                        <Entry Placeholder="••••••••••" IsPassword="True"
-                               Text="{Binding Password}" />
+                        <Entry Placeholder="••••••••••"
+                                IsPassword="True"
+                               Text="{Binding Password}"/>
                     </Border>
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*,Auto">
-                    <HorizontalStackLayout Grid.Column="0" Spacing="8">
-                        <CheckBox Color="{StaticResource Accent}" />
-                        <Label Text="Beni hatırla" Style="{StaticResource Muted}" VerticalOptions="Center" />
+                    <HorizontalStackLayout Grid.Column="0"
+                            Spacing="8">
+                        <CheckBox Color="{StaticResource Accent}"/>
+                        <Label Text="Beni hatırla"
+                                Style="{StaticResource Muted}"
+                                VerticalOptions="Center"/>
                     </HorizontalStackLayout>
-                    <Button Grid.Column="1" Text="Şifremi unuttum" Style="{StaticResource LinkButton}" FontSize="13" />
+                    <Button Grid.Column="1"
+                            Text="Şifremi unuttum"
+                            Style="{StaticResource LinkButton}"
+                            FontSize="13"/>
                 </Grid>
 
-                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13" />
+                <Label Text="{Binding ErrorMessage}"
+                        TextColor="{StaticResource Danger}"
+                        FontSize="13"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="18">
-                <Button Text="Giriş Yap" Style="{StaticResource PrimaryButton}"
-                        HeightRequest="46" Command="{Binding LoginCommand}" />
-                <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
-                    <Label Text="Hesabın yok mu?" Style="{StaticResource Muted}" VerticalOptions="Center" />
-                    <Button Text="Kayıt ol" Style="{StaticResource LinkButton}" FontSize="13"
-                            Command="{Binding GoToRegisterCommand}" />
+                <Button Text="Giriş Yap"
+                        Style="{StaticResource PrimaryButton}"
+                        HeightRequest="46"
+                        Command="{Binding LoginCommand}"/>
+                <HorizontalStackLayout Spacing="6"
+                        HorizontalOptions="Center">
+                    <Label Text="Hesabın yok mu?"
+                            Style="{StaticResource Muted}"
+                            VerticalOptions="Center"/>
+                    <Button Text="Kayıt ol"
+                            Style="{StaticResource LinkButton}"
+                            FontSize="13"
+                            Command="{Binding GoToRegisterCommand}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 
