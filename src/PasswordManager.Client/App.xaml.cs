@@ -1,18 +1,17 @@
-﻿
-using PasswordManager.Client.Views;
-
-namespace PasswordManager.Client;
+﻿namespace PasswordManager.Client;
 
 public partial class App : Application
 {
-	public App()
-	{
+    private readonly AppShell _appShell;
 
-		InitializeComponent();
-	}
+    public App(AppShell appShell)
+    {
+        InitializeComponent();
+        _appShell = appShell;
+    }
 
-	protected override Window CreateWindow(IActivationState? activationState)
-	{
-		return new Window(new AppShell());
-	}
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(_appShell);
+    }
 }

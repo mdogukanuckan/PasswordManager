@@ -37,7 +37,7 @@ public class TokenRefreshHandler : DelegatingHandler
             var authResponse = await _authApiService.RefreshAsync(
                 new RefreshRequest(refreshToken));
 
-            await _tokenStorageService.SaveTokensAsync(
+            await _tokenStorageService.UpdateTokensAsync(
                 authResponse.AccessToken,
                 authResponse.RefreshToken);
         }

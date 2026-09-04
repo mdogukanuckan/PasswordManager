@@ -16,5 +16,9 @@
         Title="Homepage"
         ContentTemplate="{DataTemplate views:HomePage}"
         Route="HomePage"/>
+    <ShellContent
+        Title="Unlock"
+        ContentTemplate="{DataTemplate views:UnlockPage}"
+        Route="UnlockPage"/>
 
 </Shell>

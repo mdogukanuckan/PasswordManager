@@ -27,6 +27,7 @@ public partial class RegisterViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
+    
     private readonly IAuthApiService _authApiService;
     private readonly IKeyDerivationService _keyDerivationService;
     private readonly IVaultCryptoService _vaultCryptoService;
@@ -91,7 +92,8 @@ public partial class RegisterViewModel : ObservableObject
             var response = await _authApiService.RegisterAsync(request);
             _vaultSessionService.SetVaultKey(vaultKey);
             _vaultSessionService.SetUserEmail(Email);
-            await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
+            await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken, true);
+            await _tokenStorageService.SaveEmailAsync(Email, true);
             await Shell.Current.GoToAsync("//HomePage");
         }
         catch (ApiException ex)

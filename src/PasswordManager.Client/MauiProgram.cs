@@ -22,14 +22,14 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 #if WINDOWS
-Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("RemoveNativeBorder", (handler, view) =>
-{
-    handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
-});
-Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder", (handler, view) =>
-{
-    handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
-});
+		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("RemoveNativeBorder", (handler, view) =>
+		{
+			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+		});
+		Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder", (handler, view) =>
+		{
+			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+		});
 #endif
 
 #if DEBUG
@@ -51,6 +51,8 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 		builder.Services.AddTransient<HomePage>();
 		builder.Services.AddTransient<RegisterViewModel>();
 		builder.Services.AddTransient<RegisterPage>();
+		builder.Services.AddTransient<UnlockViewModel>();
+		builder.Services.AddTransient<UnlockPage>();
 		builder.Services.AddTransient<AddVaultItemViewModel>();
 		builder.Services.AddTransient<AddVaultItemPage>();
 		builder.Services.AddTransient<VaultItemDetailViewModel>();
@@ -66,7 +68,8 @@ Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("RemoveNativeBorder
 		builder.Services.AddSingleton<IVaultItemMapper, VaultItemMapper>();
 		builder.Services.AddSingleton<ICategoryMapper, CategoryMapper>();
 		builder.Services.AddSingleton<IPasswordGeneratorService, PasswordGeneratorService>();
-
+		builder.Services.AddSingleton<App>();
+		builder.Services.AddSingleton<AppShell>();
 		builder.Services.AddTransient<AuthHeaderHandler>();
 		builder.Services.AddTransient<TokenRefreshHandler>();
 		builder.Services.AddHttpClient<IVaultItemApiService, VaultItemApiService>(client =>

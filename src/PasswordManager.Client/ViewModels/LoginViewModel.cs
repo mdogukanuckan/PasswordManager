@@ -65,6 +65,7 @@ public partial class LoginViewModel : ObservableObject
             _vaultSessionService.SetVaultKey(vaultKey);
             _vaultSessionService.SetUserEmail(Email);
             await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken,RememberMe);
+            await _tokenStorageService.SaveEmailAsync(Email, RememberMe);
             await Shell.Current.GoToAsync("//HomePage");
         }
         catch (ApiException ex)

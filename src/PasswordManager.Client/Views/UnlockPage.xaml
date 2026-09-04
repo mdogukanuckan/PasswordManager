@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PasswordManager.Client.Views.UnlockPage"
+             Shell.NavBarIsVisible="False"
+             Title="Kasayı Aç">
+
+    <Grid ColumnDefinitions="{OnIdiom Phone='0,*', Default='520,*'}">
+        <!-- Sol: marka paneli -->
+        <Grid Grid.Column="0"
+              BackgroundColor="#17131D"
+              Padding="48,56"
+              RowDefinitions="Auto,*,Auto">
+
+            <HorizontalStackLayout Grid.Row="0"
+                    Spacing="12">
+                <Border WidthRequest="30"
+                        HeightRequest="30"
+                        StrokeThickness="0"
+                        BackgroundColor="{StaticResource Accent}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="9"/>
+                    </Border.StrokeShape>
+                </Border>
+                <Label Text="PasswordManager"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"
+                        VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+
+            <VerticalStackLayout Grid.Row="1"
+                    Spacing="18"
+                    VerticalOptions="Center">
+                <Label Text="Tüm şifreleriniz&#10;tek bir kasada."
+                       FontSize="36"
+                        FontAttributes="Bold"
+                        LineHeight="1.15"
+                       TextColor="{StaticResource TextPrimary}"/>
+                <Label Text="Uçtan uca şifrelenmiş kasa, masaüstü ve mobil arasında senkron. Ana şifrenizi yalnızca siz bilirsiniz."
+                       FontSize="14"
+                        LineHeight="1.5"
+                        MaximumWidthRequest="340"
+                       TextColor="{StaticResource TextMuted}"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="2"
+                    Spacing="10">
+                <Label Text="•  AES-256 yerel şifreleme"
+                        Style="{StaticResource Caps}"/>
+                <Label Text="•  Sıfır bilgi mimarisi"
+                        Style="{StaticResource Caps}"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Sağ: form -->
+        <VerticalStackLayout Grid.Column="1"
+                             WidthRequest="400"
+                             Spacing="24"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center">
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Kasayı Aç"
+                        Style="{StaticResource H2}"
+                        FontSize="26"/>
+                <Label Text="Ana şifrenizi girerek devam edin."
+                        Style="{StaticResource Muted}"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="16">
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Text="E-posta"
+                            Style="{StaticResource FieldLabel}"/>
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry Placeholder="ad@ornek.com"
+                                Keyboard="Email"
+                                IsReadOnly="True"
+                               Text="{Binding Email}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="7">
+                    <Label Text="Ana Şifre"
+                            Style="{StaticResource FieldLabel}"/>
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry Placeholder="••••••••••"
+                                IsPassword="True"
+                               Text="{Binding Password}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <BoxView Grid.Column="0"
+                             IsVisible="False"/>
+                    <Button Grid.Column="1"
+                            Text="Şifremi unuttum"
+                            Style="{StaticResource LinkButton}"
+                            FontSize="13"/>
+                </Grid>
+
+                <Label Text="{Binding ErrorMessage}"
+                        TextColor="{StaticResource Danger}"
+                        FontSize="13"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="18">
+                <Button Text="Kilidi Aç"
+                        Style="{StaticResource PrimaryButton}"
+                        HeightRequest="46"
+                        Command="{Binding UnlockCommand}"/>
+                <HorizontalStackLayout Spacing="6"
+                        HorizontalOptions="Center">
+                    <Label Text="Bu hesap değil mi?"
+                            Style="{StaticResource Muted}"
+                            VerticalOptions="Center"/>
+                    <Button Text="Farklı hesapla giriş yap"
+                            Style="{StaticResource LinkButton}"
+                            FontSize="13"
+                            Command="{Binding UseAnotherAccountCommand}"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

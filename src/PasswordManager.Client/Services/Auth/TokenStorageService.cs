@@ -6,6 +6,7 @@ public class TokenStorageService : ITokenStorageService
     private const string RefreshTokenKey = "refresh_token";
     private string? _sessionAccessToken;
     private string? _sessionRefreshToken;
+    private bool _rememberMe;
 
 
     public void ClearTokens()
@@ -14,6 +15,8 @@ public class TokenStorageService : ITokenStorageService
         _sessionRefreshToken = null;
         SecureStorage.Default.Remove(AccessTokenKey);
         SecureStorage.Default.Remove(RefreshTokenKey);
+        Preferences.Default.Remove("remembered_email");
+
     }
 
     public async Task<string?> GetAccessTokenAsync()
@@ -35,9 +38,26 @@ public class TokenStorageService : ITokenStorageService
         return await SecureStorage.Default.GetAsync(RefreshTokenKey);
     }
 
-    public async Task SaveTokensAsync(string accessToken, string refreshToken, bool rememberMe)
+    public Task<string?> GetRememberedEmailAsync()
+    {
+        var email = Preferences.Default.Get<string?>("remembered_email", null);
+        return Task.FromResult(email);
+    }
+    public Task SaveEmailAsync(string email, bool rememberMe)
     {
         if (rememberMe)
+        {
+            Preferences.Default.Set("remembered_email", email);
+            return Task.CompletedTask;
+        }
+        Preferences.Default.Remove("remembered_email");
+        return Task.CompletedTask;
+    }
+
+    public async Task SaveTokensAsync(string accessToken, string refreshToken, bool rememberMe)
+    {
+        _rememberMe = rememberMe;
+        if (_rememberMe)
         {
             await SecureStorage.Default.SetAsync(AccessTokenKey, accessToken);
             await SecureStorage.Default.SetAsync(RefreshTokenKey, refreshToken);
@@ -51,5 +71,10 @@ public class TokenStorageService : ITokenStorageService
             SecureStorage.Default.Remove(AccessTokenKey);
             SecureStorage.Default.Remove(RefreshTokenKey);
         }
+    }
+
+    public Task UpdateTokensAsync(string accessToken, string refreshToken)
+    {
+        return SaveTokensAsync(accessToken, refreshToken, _rememberMe);
     }
 }
