@@ -19,6 +19,9 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
+    [ObservableProperty]
+    public partial bool RememberMe {get;set;}
+
     private readonly IAuthApiService _authApiService;
     private readonly ITokenStorageService _tokenStorageService;
     private readonly IKeyDerivationService _keyDerivationService;
@@ -58,11 +61,10 @@ public partial class LoginViewModel : ObservableObject
                 Password, salt.EncryptionSalt, salt.KdfIterations, salt.KdfMemorySize, salt.KdfParallelism);
             var authKey = Convert.ToBase64String(authKeyBytes);
             var response = await _authApiService.LoginAsync(new LoginRequest(Email, authKey));
-            await Clipboard.SetTextAsync(response.AccessToken);
             var vaultKey = _vaultCryptoService.UnwrapKey(response.WrappedVaultKey, response.WrappedVaultKeyNonce, _encryptionKey);
             _vaultSessionService.SetVaultKey(vaultKey);
             _vaultSessionService.SetUserEmail(Email);
-            await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken);
+            await _tokenStorageService.SaveTokensAsync(response.AccessToken, response.RefreshToken,RememberMe);
             await Shell.Current.GoToAsync("//HomePage");
         }
         catch (ApiException ex)

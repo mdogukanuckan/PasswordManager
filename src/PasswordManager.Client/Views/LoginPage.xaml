@@ -93,7 +93,8 @@
                 <Grid ColumnDefinitions="*,Auto">
                     <HorizontalStackLayout Grid.Column="0"
                             Spacing="8">
-                        <CheckBox Color="{StaticResource Accent}"/>
+                        <CheckBox Color="{StaticResource Accent}"
+                                IsChecked="{Binding RememberMe}"/>
                         <Label Text="Beni hatırla"
                                 Style="{StaticResource Muted}"
                                 VerticalOptions="Center"/>
