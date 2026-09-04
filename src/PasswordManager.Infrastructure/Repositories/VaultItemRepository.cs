@@ -18,6 +18,11 @@ public class VaultItemRepository : IVaultItemRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task DeleteAllByUserIdAsync(Guid userId)
+    {
+        await _context.VaultItems.Where(v => v.UserId == userId).ExecuteDeleteAsync();
+    }
+
     public async Task DeleteAsync(VaultItem item)
     {
         _context.VaultItems.Remove(item);

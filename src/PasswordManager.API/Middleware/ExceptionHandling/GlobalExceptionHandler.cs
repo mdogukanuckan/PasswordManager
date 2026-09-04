@@ -19,6 +19,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             InvalidCredentialsException => (StatusCodes.Status401Unauthorized, "Invalid credentials", exception.Message),
             EmailAlreadyExistsException => (StatusCodes.Status409Conflict, "Email already exists", exception.Message),
             NotFoundException => (StatusCodes.Status404NotFound, "Resource not found", exception.Message),
+            InvalidOrExpiredTokenException => (StatusCodes.Status400BadRequest, "Invalid or expired token", exception.Message),
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred", "An unexpected error occurred. Please try again later.")
         };
         if (statusCode == StatusCodes.Status500InternalServerError)

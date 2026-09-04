@@ -18,15 +18,25 @@ public class AuthService : IAuthService
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenGenerator _tokenGenerator;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IPasswordResetTokenRepository _passwordResetTokenRepository;
+    private readonly IEmailSender _emailSender;
+    private readonly IVaultItemRepository _vaultItemRepository;
+    private readonly ICategoryRepository _categoryRepository;
 
     public AuthService(IUserRepository userRepository, IOptions<AuthOptions> authOptions,
-     IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IRefreshTokenRepository refreshTokenRepository)
+     IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IRefreshTokenRepository refreshTokenRepository,
+     IPasswordResetTokenRepository passwordResetTokenRepository, IEmailSender emailSender,
+     IVaultItemRepository vaultItemRepository, ICategoryRepository categoryRepository)
     {
         _userRepository = userRepository;
         _authOptions = authOptions.Value;
         _passwordHasher = passwordHasher;
         _tokenGenerator = tokenGenerator;
         _refreshTokenRepository = refreshTokenRepository;
+        _passwordResetTokenRepository = passwordResetTokenRepository;
+        _emailSender = emailSender;
+        _vaultItemRepository = vaultItemRepository;
+        _categoryRepository = categoryRepository;
     }
     public async Task<SaltResponse> GetSaltAsync(string email)
     {
@@ -133,4 +143,62 @@ public class AuthService : IAuthService
             user.WrappedVaultKeyNonce
         );
     }
+
+    public async Task ForgotPasswordAsync(ForgotPasswordRequest request)
+    {
+        string normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var user = await _userRepository.GetByEmailAsync(normalizedEmail);
+
+
+        if (user is null)
+        {
+            return;
+        }
+
+        string rawToken = _tokenGenerator.GenerateRefreshToken();
+        string tokenHash = _tokenGenerator.HashRefreshToken(rawToken);
+
+        var resetToken = new PasswordResetToken
+        {
+            UserId = user.Id,
+            TokenHash = tokenHash,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(15)
+        };
+
+        await _passwordResetTokenRepository.AddAsync(resetToken);
+        await _emailSender.SendAsync(
+            user.Email,
+            "Reset your password",
+            $"Use the following token to reset your password: {rawToken}\n\nThis token expires in 15 minutes. If you didn't request this, you can ignore this email."
+        );
+    }
+
+    public async Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        string tokenHash = _tokenGenerator.HashRefreshToken(request.Token);
+        var resetToken = await _passwordResetTokenRepository.GetByTokenHashAsync(tokenHash);
+
+        if (resetToken is null || resetToken.UsedAt is not null || resetToken.ExpiresAt < DateTime.UtcNow)
+        {
+            throw new InvalidOrExpiredTokenException();
+        }
+
+        var user = resetToken.User;
+
+        user.AuthHash = _passwordHasher.Hash(request.AuthKey);
+        user.AuthSalt = request.AuthSalt;
+        user.EncryptionSalt = request.EncryptionSalt;
+        user.WrappedVaultKey = request.WrappedVaultKey;
+        user.WrappedVaultKeyNonce = request.WrappedVaultKeyNonce;
+
+        await _userRepository.UpdateAsync(user);
+        await _vaultItemRepository.DeleteAllByUserIdAsync(user.Id);
+        await _categoryRepository.DeleteAllByUserIdAsync(user.Id);
+        await _refreshTokenRepository.RevokeAllByUserIdAsync(user.Id);
+        await _passwordResetTokenRepository.MarkAsUsedAsync(resetToken);
+
+        return await IssueAuthResponseAsync(user);
+    }
+  
+
 }

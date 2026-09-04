@@ -19,6 +19,11 @@ public class CategoryRepository : ICategoryRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task DeleteAllByUserIdAsync(Guid userId)
+    {
+    await _context.Categories.Where(c => c.UserId == userId).ExecuteDeleteAsync();
+    }
+
     public async Task DeleteAsync(Category item)
     {
         _context.Categories.Remove(item);

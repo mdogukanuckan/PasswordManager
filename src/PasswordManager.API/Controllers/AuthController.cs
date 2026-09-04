@@ -15,9 +15,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register( RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var  result = await _authService.RegisterAsync(request);
+        var result = await _authService.RegisterAsync(request);
         return Ok(result);
     }
 
@@ -39,6 +39,20 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Refresh(RefreshRequest request)
     {
         var result = await _authService.RefreshAsync(request.RefreshToken);
+        return Ok(result);
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+    {
+        await _authService.ForgotPasswordAsync(request);
+        return Ok(new { message = "If that email exists, a reset link has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+    {
+        var result = await _authService.ResetPasswordAsync(request);
         return Ok(result);
     }
 }
